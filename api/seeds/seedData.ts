@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { config } from "dotenv";
 import { connectDB } from "../config/database.js";
 import Employee from "../models/Employee.js";
