@@ -17,6 +17,16 @@ export function getFrontendDashboardRoutes(): RouteObject[] {
 			],
 		},
 		{
+			path: "employee",
+			children: [
+				{ index: true, element: Component("/pages/employee/employees") },
+				{ path: "employees", element: Component("/pages/employee/employees") },
+				{ path: "attendance", element: Component("/pages/employee/attendance") },
+				{ path: "payroll", element: Component("/pages/employee/payroll") },
+				{ path: "settings", element: Component("/pages/employee/settings") },
+			],
+		},
+		{
 			path: "components",
 			children: [
 				{ index: true, element: <Navigate to="animate" replace /> },

@@ -37,4 +37,29 @@ export const frontendNavData: NavProps["data"] = [
 			},
 		],
 	},
+	{
+		name: "Employee",
+		items: [
+			{
+				title: "Employees",
+				path: "/employee/employees",
+				icon: <Icon icon="solar:user-id-bold-duotone" size="24" />,
+			},
+			{
+				title: "Attendance",
+				path: "/employee/attendance",
+				icon: <Icon icon="solar:calendar-mark-bold-duotone" size="24" />,
+			},
+			{
+				title: "Payroll",
+				path: "/employee/payroll",
+				icon: <Icon icon="solar:wallet-money-bold-duotone" size="24" />,
+			},
+			{
+				title: "Role Settings",
+				path: "/employee/settings",
+				icon: <Icon icon="solar:settings-bold-duotone" size="24" />,
+			},
+		],
+	},
 ];

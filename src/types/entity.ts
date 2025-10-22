@@ -158,3 +158,69 @@ export interface StockHistory {
 	createdAt: string;
 	updatedAt: string;
 }
+
+// Employee Management Types
+export interface Employee {
+	_id: string;
+	employeeId: string;
+	name: string;
+	email: string;
+	phoneNumber: string;
+	address: string;
+	dateOfJoining: string;
+	position: string;
+	department: string;
+	salary: number;
+	status: "active" | "inactive" | "on_leave";
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface Attendance {
+	_id: string;
+	employeeId: string | Employee;
+	date: string;
+	checkIn: string;
+	checkOut?: string;
+	status: "present" | "absent" | "half_day" | "on_leave";
+	workHours?: number;
+	notes?: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface Payroll {
+	_id: string;
+	employeeId: string | Employee;
+	month: number;
+	year: number;
+	baseSalary: number;
+	allowances: number;
+	deductions: number;
+	bonus: number;
+	netSalary: number;
+	workingDays: number;
+	presentDays: number;
+	paidDays: number;
+	paymentStatus: "pending" | "paid";
+	paymentDate?: string;
+	notes?: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface PermissionModule {
+	module: string;
+	canView: boolean;
+	canCreate: boolean;
+	canEdit: boolean;
+	canDelete: boolean;
+}
+
+export interface RolePermission {
+	_id: string;
+	role: "sales" | "manager" | "admin";
+	permissions: PermissionModule[];
+	createdAt: string;
+	updatedAt: string;
+}

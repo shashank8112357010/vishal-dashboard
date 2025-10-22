@@ -1,7 +1,11 @@
 import { Router } from "express";
+import { attendanceController } from "../controllers/attendanceController.js";
+import { employeeController } from "../controllers/employeeController.js";
 import { inventoryController } from "../controllers/inventoryController.js";
 import { invoiceController } from "../controllers/invoiceController.js";
 import { partyController } from "../controllers/partyController.js";
+import { payrollController } from "../controllers/payrollController.js";
+import { rolePermissionController } from "../controllers/rolePermissionController.js";
 import { authorize, protect } from "../middleware/auth.js";
 import authRoutes from "./auth.js";
 
@@ -40,5 +44,39 @@ router.post("/invoices", invoiceController.create);
 // Only manager and admin can update/delete invoices
 router.put("/invoices/:id", authorize("manager", "admin"), invoiceController.update);
 router.delete("/invoices/:id", authorize("manager", "admin"), invoiceController.delete);
+
+// Employee routes
+// All roles can view employees
+router.get("/employees", employeeController.getAll);
+router.get("/employees/:id", employeeController.getById);
+// Only manager and admin can manage employees
+router.post("/employees", authorize("manager", "admin"), employeeController.create);
+router.put("/employees/:id", authorize("manager", "admin"), employeeController.update);
+router.delete("/employees/:id", authorize("manager", "admin"), employeeController.delete);
+
+// Attendance routes
+// All roles can view attendance
+router.get("/attendance", attendanceController.getAll);
+router.get("/attendance/:id", attendanceController.getById);
+// Only manager and admin can manage attendance
+router.post("/attendance", authorize("manager", "admin"), attendanceController.create);
+router.put("/attendance/:id", authorize("manager", "admin"), attendanceController.update);
+router.delete("/attendance/:id", authorize("manager", "admin"), attendanceController.delete);
+
+// Payroll routes
+// All roles can view payroll
+router.get("/payroll", payrollController.getAll);
+router.get("/payroll/:id", payrollController.getById);
+// Only manager and admin can manage payroll
+router.post("/payroll", authorize("manager", "admin"), payrollController.create);
+router.put("/payroll/:id", authorize("manager", "admin"), payrollController.update);
+router.delete("/payroll/:id", authorize("manager", "admin"), payrollController.delete);
+
+// Role Permission routes
+// Only admin can manage role permissions
+router.get("/role-permissions", authorize("admin"), rolePermissionController.getAll);
+router.get("/role-permissions/:role", authorize("admin"), rolePermissionController.getByRole);
+router.post("/role-permissions", authorize("admin"), rolePermissionController.createOrUpdate);
+router.delete("/role-permissions/:role", authorize("admin"), rolePermissionController.delete);
 
 export default router;
