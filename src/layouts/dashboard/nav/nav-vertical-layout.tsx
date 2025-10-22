@@ -71,9 +71,17 @@ export function NavVerticalLayout({ data, className }: Props) {
 				</Button>
 			</div>
 
-			<ScrollArea className={cn("h-[calc(100vh-var(--layout-header-height))] px-2 bg-background")}>
-				{themeLayout === ThemeLayout.Mini ? <NavMini data={data} /> : <NavVertical data={data} />}
-			</ScrollArea>
+			<div className="flex flex-col h-[calc(100vh-var(--layout-header-height))]">
+				<ScrollArea className="flex-1 px-2 bg-background">
+					{themeLayout === ThemeLayout.Mini ? <NavMini data={data} /> : <NavVertical data={data} />}
+				</ScrollArea>
+
+				{themeLayout !== ThemeLayout.Mini && (
+					<div className="px-4 py-3 border-t border-dashed text-center text-xs text-muted-foreground">
+						Made with <span className="text-red-500">❤️</span> Tech Assistant
+					</div>
+				)}
+			</div>
 		</nav>
 	);
 }

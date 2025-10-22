@@ -1,6 +1,5 @@
 import { NavLink } from "react-router";
 import { cn } from "@/utils";
-import { Icon } from "../icon";
 
 interface Props {
 	size?: number | string;
@@ -9,7 +8,12 @@ interface Props {
 function Logo({ size = 50, className }: Props) {
 	return (
 		<NavLink to="/" className={cn(className)}>
-			<Icon icon="local:ic-logo-badge" size={size} color="var(--colors-palette-primary-default)" />
+			<img
+				src="/vishallogo.png"
+				alt="Vishal Cycle Store Logo"
+				style={{ width: typeof size === "number" ? `${size}px` : size, height: "auto" }}
+				className="object-contain"
+			/>
 		</NavLink>
 	);
 }

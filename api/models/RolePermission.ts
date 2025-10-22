@@ -1,5 +1,5 @@
 import mongoose, { type Document, Schema } from "mongoose";
-import type { UserRole } from "./User";
+import type { UserRole } from "./User.js";
 
 export interface IPermission {
 	module: string;
