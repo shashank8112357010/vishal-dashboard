@@ -19,6 +19,7 @@
 		"seed:users": "tsx api/utils/seedUsers.ts",
 		"seed:all": "tsx api/utils/seedAll.ts",
 		"seed:data": "tsx api/seeds/seedData.ts",
+		"migrate:ledger": "tsx api/utils/migrateLedger.ts",
 		"clean": "rm -rf node_modules dist"
 	},
 	"dependencies": {
