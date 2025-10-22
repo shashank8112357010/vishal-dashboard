@@ -24,12 +24,17 @@ app.use("/api", routes);
 
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === "production") {
+	const clientPath = path.join(__dirname, "client");
+	console.log("Serving static files from:", clientPath);
+
 	// Serve static files from the client folder
-	app.use(express.static(path.join(__dirname, "client")));
+	app.use(express.static(clientPath));
 
 	// Handle React routing, return all requests to React app
 	app.get("*", (_req, res) => {
-		res.sendFile(path.join(__dirname, "client/index.html"));
+		const indexPath = path.join(clientPath, "index.html");
+		console.log("Serving index.html from:", indexPath);
+		res.sendFile(indexPath);
 	});
 }
 
