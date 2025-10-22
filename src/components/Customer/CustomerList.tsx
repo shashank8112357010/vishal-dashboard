@@ -150,6 +150,7 @@ const CustomerList: React.FC = () => {
 				dataSource={filteredCustomers}
 				rowKey="_id"
 				loading={isLoading}
+				childrenColumnName="tableChildren"
 				pagination={{
 					pageSize: 10,
 					showSizeChanger: true,
