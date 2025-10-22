@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { Invoice } from "../models/Invoice.js";
 import { Ledger } from "../models/Ledger.js";
 
 export const ledgerController = {
@@ -99,6 +100,21 @@ export const ledgerController = {
 		}
 
 		await ledgerEntry.save();
+
+		// Update related invoice payment status if exists
+		if (ledgerEntry.invoiceId) {
+			const invoice = await Invoice.findById(ledgerEntry.invoiceId);
+			if (invoice) {
+				invoice.balanceAmount = ledgerEntry.balanceAmount;
+				if (ledgerEntry.status === "settled") {
+					invoice.paymentStatus = "paid";
+				} else if (ledgerEntry.status === "partial") {
+					invoice.paymentStatus = "partial";
+				}
+				await invoice.save();
+			}
+		}
+
 		res.json(ledgerEntry);
 	},
 

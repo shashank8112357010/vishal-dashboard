@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import { Inventory } from "../models/Inventory.js";
 import { type IInvoice, Invoice } from "../models/Invoice.js";
+import { Ledger } from "../models/Ledger.js";
 import { Party } from "../models/Party.js";
 import { StockHistory } from "../models/StockHistory.js";
 
@@ -76,6 +77,25 @@ export const invoiceController = {
 			await party.save({ session });
 
 			await invoice.save({ session });
+
+			// Create ledger entry for receivables/payables tracking
+			const transactionType = invoice.invoiceType === "sale" ? "receivable" : "payable";
+			const description = `Invoice #${invoice.invoiceNumber} - ${invoice.invoiceType === "sale" ? "Sale to" : "Purchase from"} ${party.partyName}`;
+
+			const ledgerEntry = new Ledger({
+				partyId: invoice.partyId,
+				customerId: invoice.customerId,
+				invoiceId: invoice._id,
+				transactionType,
+				originalAmount: invoice.totalAmount,
+				settledAmount: invoice.paymentStatus === "paid" ? invoice.totalAmount : 0,
+				balanceAmount: invoice.balanceAmount,
+				description,
+				status:
+					invoice.paymentStatus === "paid" ? "settled" : invoice.paymentStatus === "partial" ? "partial" : "pending",
+			});
+
+			await ledgerEntry.save({ session });
 			await session.commitTransaction();
 
 			const savedInvoice = await Invoice.findById(invoice._id).populate("partyId").populate("items.itemId");
@@ -187,6 +207,26 @@ export const invoiceController = {
 				await newParty.save({ session });
 			}
 
+			// Update ledger entry
+			const ledgerEntry = await Ledger.findOne({ invoiceId: updatedInvoice._id }).session(session);
+			if (ledgerEntry) {
+				const transactionType = updatedInvoice.invoiceType === "sale" ? "receivable" : "payable";
+				const description = `Invoice #${updatedInvoice.invoiceNumber} - ${updatedInvoice.invoiceType === "sale" ? "Sale to" : "Purchase from"} ${newParty?.partyName || "Unknown"}`;
+
+				ledgerEntry.transactionType = transactionType;
+				ledgerEntry.originalAmount = updatedInvoice.totalAmount;
+				ledgerEntry.balanceAmount = updatedInvoice.balanceAmount;
+				ledgerEntry.description = description;
+				ledgerEntry.status =
+					updatedInvoice.paymentStatus === "paid"
+						? "settled"
+						: updatedInvoice.paymentStatus === "partial"
+							? "partial"
+							: "pending";
+
+				await ledgerEntry.save({ session });
+			}
+
 			await session.commitTransaction();
 
 			const result = await Invoice.findById(updatedInvoice._id).populate("partyId").populate("items.itemId");
@@ -242,6 +282,9 @@ export const invoiceController = {
 				party.transactions = party.transactions.filter((t) => !t.equals(invoice._id as mongoose.Types.ObjectId));
 				await party.save({ session });
 			}
+
+			// Delete associated ledger entry
+			await Ledger.deleteOne({ invoiceId: invoice._id }).session(session);
 
 			await invoice.deleteOne({ session });
 			await session.commitTransaction();
