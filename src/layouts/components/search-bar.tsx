@@ -3,6 +3,11 @@ import { useBoolean } from "react-use";
 import { Icon } from "@/components/icon";
 import useLocale from "@/locales/use-locale";
 import { useRouter } from "@/routes/hooks";
+import { useCustomers } from "@/services/customerService";
+import { useEmployees } from "@/services/employeeService";
+import { useInventory } from "@/services/inventoryService";
+import { useInvoices } from "@/services/invoiceService";
+import { useParties } from "@/services/partyService";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandSeparator } from "@/ui/command";
@@ -14,6 +19,8 @@ interface SearchItem {
 	key: string;
 	label: string;
 	path: string;
+	subtitle?: string;
+	type: "navigation" | "party" | "customer" | "inventory" | "invoice" | "employee";
 }
 
 // 高亮文本组件
@@ -26,7 +33,7 @@ const HighlightText = ({ text, query }: { text: string; query: string }) => {
 		<>
 			{parts.map((part, i) =>
 				part.toLowerCase() === query.toLowerCase() ? (
-					// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+					// biome-ignore lint/suspicious/noArrayIndexKey: index is stable for highlighting
 					<span key={i} className="text-primary">
 						{part}
 					</span>
@@ -45,35 +52,128 @@ const SearchBar = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const navData = useFilteredNavData();
 
+	// Fetch all data for global search
+	const { data: parties = [] } = useParties();
+	const { data: customers = [] } = useCustomers();
+	const { data: inventory = [] } = useInventory();
+	const { data: invoices = [] } = useInvoices();
+	const { data: employees = [] } = useEmployees();
+
 	// Flatten navigation data into searchable items
-	const flattenedItems = useMemo(() => {
+	const allSearchableItems = useMemo(() => {
 		const items: SearchItem[] = [];
 
-		const flattenItems = (navItems: typeof navData) => {
+		// Navigation items
+		const flattenNav = (navItems: typeof navData) => {
 			for (const section of navItems) {
 				for (const item of section.items) {
 					if (item.path) {
 						items.push({
-							key: item.path,
+							key: `nav-${item.path}`,
 							label: item.title,
 							path: item.path,
+							type: "navigation",
 						});
 					}
 					if (item.children) {
-						flattenItems([{ items: item.children }]);
+						flattenNav([{ items: item.children }]);
 					}
 				}
 			}
 		};
+		flattenNav(navData);
 
-		flattenItems(navData);
+		// Parties
+		for (const party of parties) {
+			items.push({
+				key: `party-${party._id}`,
+				label: party.partyName,
+				subtitle: `${party.phoneNumber} • ${party.partyType}`,
+				path: `/bicycle-shop/parties`,
+				type: "party",
+			});
+		}
+
+		// Customers
+		for (const customer of customers) {
+			items.push({
+				key: `customer-${customer._id}`,
+				label: customer.customerName,
+				subtitle: `${customer.phone}${customer.email ? ` • ${customer.email}` : ""}`,
+				path: `/bicycle-shop/customers/${customer._id}`,
+				type: "customer",
+			});
+		}
+
+		// Inventory
+		for (const item of inventory) {
+			items.push({
+				key: `inventory-${item._id}`,
+				label: item.itemName,
+				subtitle: `${item.category} • ${item.quantityAvailable} ${item.unitType} available`,
+				path: `/bicycle-shop/inventory`,
+				type: "inventory",
+			});
+		}
+
+		// Invoices
+		for (const invoice of invoices) {
+			const partyName = typeof invoice.partyId === "string" ? "" : invoice.partyId?.partyName || "";
+			items.push({
+				key: `invoice-${invoice._id}`,
+				label: invoice.invoiceNumber,
+				subtitle: `${partyName} • ${invoice.invoiceType} • ₹${invoice.totalAmount}`,
+				path: `/bicycle-shop/invoices`,
+				type: "invoice",
+			});
+		}
+
+		// Employees
+		for (const employee of employees) {
+			items.push({
+				key: `employee-${employee._id}`,
+				label: employee.name,
+				subtitle: `${employee.phoneNumber} • ${employee.position}`,
+				path: `/bicycle-shop/employees`,
+				type: "employee",
+			});
+		}
+
 		return items;
-	}, [navData]);
+	}, [navData, parties, customers, inventory, invoices, employees]);
 
-	// const searchResult = useMemo(() => {
-	// 	const query = searchQuery.toLowerCase();
-	// 	return flattenedItems.filter((item) => t(item.label).toLowerCase().includes(query) || item.key.toLowerCase().includes(query));
-	// }, [searchQuery, t, flattenedItems]);
+	// Filter items based on search query
+	const searchResults = useMemo(() => {
+		if (!searchQuery) return allSearchableItems;
+
+		const query = searchQuery.toLowerCase();
+		return allSearchableItems.filter((item) => {
+			const label = item.type === "navigation" ? t(item.label) : item.label;
+			return (
+				label.toLowerCase().includes(query) ||
+				item.subtitle?.toLowerCase().includes(query) ||
+				item.path.toLowerCase().includes(query)
+			);
+		});
+	}, [searchQuery, allSearchableItems, t]);
+
+	// Group results by type
+	const groupedResults = useMemo(() => {
+		const groups: Record<string, SearchItem[]> = {
+			navigation: [],
+			party: [],
+			customer: [],
+			inventory: [],
+			invoice: [],
+			employee: [],
+		};
+
+		for (const item of searchResults) {
+			groups[item.type].push(item);
+		}
+
+		return groups;
+	}, [searchResults]);
 
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {
@@ -111,18 +211,106 @@ const SearchBar = () => {
 				<CommandInput placeholder="Type a command or search..." value={searchQuery} onValueChange={setSearchQuery} />
 				<ScrollArea className="h-[400px]">
 					<CommandEmpty>No results found.</CommandEmpty>
-					<CommandGroup heading="Navigations">
-						{flattenedItems.map(({ key, label }) => (
-							<CommandItem key={key} onSelect={() => handleSelect(key)} className="flex flex-col items-start">
-								<div className="font-medium">
-									<HighlightText text={t(label)} query={searchQuery} />
-								</div>
-								<div className="text-xs text-muted-foreground">
-									<HighlightText text={key} query={searchQuery} />
-								</div>
-							</CommandItem>
-						))}
-					</CommandGroup>
+
+					{groupedResults.navigation.length > 0 && (
+						<CommandGroup heading="Navigations">
+							{groupedResults.navigation.map(({ key, label, path }) => (
+								<CommandItem key={key} onSelect={() => handleSelect(path)} className="flex flex-col items-start">
+									<div className="font-medium">
+										<HighlightText text={t(label)} query={searchQuery} />
+									</div>
+									<div className="text-xs text-muted-foreground">
+										<HighlightText text={path} query={searchQuery} />
+									</div>
+								</CommandItem>
+							))}
+						</CommandGroup>
+					)}
+
+					{groupedResults.party.length > 0 && (
+						<CommandGroup heading="Parties">
+							{groupedResults.party.map(({ key, label, subtitle, path }) => (
+								<CommandItem key={key} onSelect={() => handleSelect(path)} className="flex flex-col items-start">
+									<div className="font-medium">
+										<HighlightText text={label} query={searchQuery} />
+									</div>
+									{subtitle && (
+										<div className="text-xs text-muted-foreground">
+											<HighlightText text={subtitle} query={searchQuery} />
+										</div>
+									)}
+								</CommandItem>
+							))}
+						</CommandGroup>
+					)}
+
+					{groupedResults.customer.length > 0 && (
+						<CommandGroup heading="Customers">
+							{groupedResults.customer.map(({ key, label, subtitle, path }) => (
+								<CommandItem key={key} onSelect={() => handleSelect(path)} className="flex flex-col items-start">
+									<div className="font-medium">
+										<HighlightText text={label} query={searchQuery} />
+									</div>
+									{subtitle && (
+										<div className="text-xs text-muted-foreground">
+											<HighlightText text={subtitle} query={searchQuery} />
+										</div>
+									)}
+								</CommandItem>
+							))}
+						</CommandGroup>
+					)}
+
+					{groupedResults.inventory.length > 0 && (
+						<CommandGroup heading="Inventory">
+							{groupedResults.inventory.map(({ key, label, subtitle, path }) => (
+								<CommandItem key={key} onSelect={() => handleSelect(path)} className="flex flex-col items-start">
+									<div className="font-medium">
+										<HighlightText text={label} query={searchQuery} />
+									</div>
+									{subtitle && (
+										<div className="text-xs text-muted-foreground">
+											<HighlightText text={subtitle} query={searchQuery} />
+										</div>
+									)}
+								</CommandItem>
+							))}
+						</CommandGroup>
+					)}
+
+					{groupedResults.invoice.length > 0 && (
+						<CommandGroup heading="Invoices">
+							{groupedResults.invoice.map(({ key, label, subtitle, path }) => (
+								<CommandItem key={key} onSelect={() => handleSelect(path)} className="flex flex-col items-start">
+									<div className="font-medium">
+										<HighlightText text={label} query={searchQuery} />
+									</div>
+									{subtitle && (
+										<div className="text-xs text-muted-foreground">
+											<HighlightText text={subtitle} query={searchQuery} />
+										</div>
+									)}
+								</CommandItem>
+							))}
+						</CommandGroup>
+					)}
+
+					{groupedResults.employee.length > 0 && (
+						<CommandGroup heading="Employees">
+							{groupedResults.employee.map(({ key, label, subtitle, path }) => (
+								<CommandItem key={key} onSelect={() => handleSelect(path)} className="flex flex-col items-start">
+									<div className="font-medium">
+										<HighlightText text={label} query={searchQuery} />
+									</div>
+									{subtitle && (
+										<div className="text-xs text-muted-foreground">
+											<HighlightText text={subtitle} query={searchQuery} />
+										</div>
+									)}
+								</CommandItem>
+							))}
+						</CommandGroup>
+					)}
 				</ScrollArea>
 				<CommandSeparator />
 				<div className="flex flex-wrap text-text-primary p-2 justify-end gap-2">
