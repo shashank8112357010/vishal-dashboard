@@ -1,7 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 import react from "@vitejs/plugin-react";
-import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig, loadEnv } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -10,24 +9,37 @@ export default defineConfig(({ mode }) => {
 	const base = env.VITE_APP_PUBLIC_PATH || "/";
 	const isProduction = mode === "production";
 
-	return {
-		base,
-		plugins: [
-			react(),
-			vanillaExtractPlugin({
-				identifiers: ({ debugId }) => `${debugId}`,
-			}),
-			tailwindcss(),
-			tsconfigPaths(),
+	// Optional plugins
+	const plugins = [
+		react(),
+		vanillaExtractPlugin({
+			identifiers: ({ debugId }) => `${debugId}`,
+		}),
+		tailwindcss(),
+		tsconfigPaths(),
+	];
 
-			isProduction &&
+	// Add visualizer only if package is available (for local development)
+	if (isProduction && process.env.ENABLE_BUNDLE_ANALYZER === "true") {
+		try {
+			// eslint-disable-next-line @typescript-eslint/no-require-imports
+			const { visualizer } = require("rollup-plugin-visualizer");
+			plugins.push(
 				visualizer({
 					open: true,
 					gzipSize: true,
 					brotliSize: true,
 					template: "treemap",
 				}),
-		].filter(Boolean),
+			);
+		} catch {
+			// Visualizer not available, skip it
+		}
+	}
+
+	return {
+		base,
+		plugins,
 
 		server: {
 			open: true,
