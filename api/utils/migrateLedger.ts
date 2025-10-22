@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { Invoice } from "../models/Invoice.js";
 import { Ledger } from "../models/Ledger.js";
+import type { IParty } from "../models/Party.js";
 import { Party } from "../models/Party.js";
 
 dotenv.config();
@@ -31,12 +32,18 @@ async function migrateLedger() {
 				continue;
 			}
 
-			const party = typeof invoice.partyId === "string" ? null : invoice.partyId;
-			if (!party) {
-				console.log(`Skipping invoice ${invoice.invoiceNumber} - party not found`);
+			// Type guard to check if partyId is populated
+			if (
+				!invoice.partyId ||
+				typeof invoice.partyId === "string" ||
+				invoice.partyId instanceof mongoose.Types.ObjectId
+			) {
+				console.log(`Skipping invoice ${invoice.invoiceNumber} - party not populated`);
 				skipped++;
 				continue;
 			}
+
+			const party = invoice.partyId as unknown as IParty;
 
 			// Create ledger entry
 			const transactionType = invoice.invoiceType === "sale" ? "receivable" : "payable";
