@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { UserInfo, UserToken } from "#/entity";
 import { StorageEnum } from "#/enum";
-import userService, { type SignInReq } from "@/api/services/userService";
+import userService, { type SignInReq } from "@/services/userService";
 
 type UserStore = {
 	userInfo: Partial<UserInfo>;

@@ -5,7 +5,6 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router";
 import { worker } from "./_mock";
 import App from "./App";
-import menuService from "./api/services/menuService";
 import { registerLocalIcons } from "./components/icon";
 import { GLOBAL_CONFIG } from "./global-config";
 import ErrorBoundary from "./routes/components/error-boundary";
@@ -20,10 +19,6 @@ if (import.meta.env.DEV) {
 		onUnhandledRequest: "bypass",
 		serviceWorker: { url: urlJoin(GLOBAL_CONFIG.publicPath, "mockServiceWorker.js") },
 	});
-}
-
-if (GLOBAL_CONFIG.routerMode === "backend") {
-	await menuService.getMenuList();
 }
 
 const router = createBrowserRouter(
