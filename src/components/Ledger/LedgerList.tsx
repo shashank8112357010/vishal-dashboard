@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Card, Col, Empty, Row, Space, Table, Tabs, Tag } from "antd";
 import type React from "react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { EnhancedStatsCard } from "@/components/Dashboard";
 import { useLedgerSummary } from "@/services/ledgerService";
 import type { LedgerEntry } from "@/types/entity";
@@ -21,23 +21,6 @@ const LedgerList: React.FC = () => {
 	const { data: summary, isLoading } = useLedgerSummary();
 	const [settlementVisible, setSettlementVisible] = useState(false);
 	const [selectedEntry, setSelectedEntry] = useState<LedgerEntry | null>(null);
-
-	// Generate sparkline data (must be at top level, before any returns)
-	const sparklineData = useMemo(
-		() =>
-			summary
-				? [
-						summary.summary.totalReceivable * 0.7,
-						summary.summary.totalReceivable * 0.8,
-						summary.summary.totalReceivable * 0.75,
-						summary.summary.totalReceivable * 0.9,
-						summary.summary.totalReceivable * 0.85,
-						summary.summary.totalReceivable * 0.95,
-						summary.summary.totalReceivable,
-					]
-				: [],
-		[summary],
-	);
 
 	const handleSettle = (entry: LedgerEntry) => {
 		setSelectedEntry(entry);
@@ -136,36 +119,31 @@ const LedgerList: React.FC = () => {
 			<Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
 				<Col xs={24} sm={12} lg={6}>
 					<EnhancedStatsCard
-						title="Total Receivable"
+						title="Lendaar (लेनदार)"
 						value={formatCurrency(summary.summary.totalReceivable)}
 						icon={<RiseOutlined />}
 						iconColor="#52c41a"
 						iconBgColor="rgba(82, 196, 26, 0.1)"
-						trend={15.6}
-						data={sparklineData}
 					/>
 				</Col>
 
 				<Col xs={24} sm={12} lg={6}>
 					<EnhancedStatsCard
-						title="Total Payable"
+						title="Dendaar (देनदार)"
 						value={formatCurrency(summary.summary.totalPayable)}
 						icon={<FallOutlined />}
 						iconColor="#ff4d4f"
 						iconBgColor="rgba(255, 77, 79, 0.1)"
-						trend={-8.2}
-						data={sparklineData.map((v) => v * 0.3)}
 					/>
 				</Col>
 
 				<Col xs={24} sm={12} lg={6}>
 					<EnhancedStatsCard
-						title="Net Position"
+						title="Net Balance"
 						value={formatCurrency(summary.summary.netPosition)}
 						icon={<DollarOutlined />}
 						iconColor={summary.summary.netPosition >= 0 ? "#52c41a" : "#ff4d4f"}
 						iconBgColor={summary.summary.netPosition >= 0 ? "rgba(82, 196, 26, 0.1)" : "rgba(255, 77, 79, 0.1)"}
-						data={sparklineData}
 					/>
 				</Col>
 
@@ -176,7 +154,6 @@ const LedgerList: React.FC = () => {
 						icon={<FileTextOutlined />}
 						iconColor="#1890ff"
 						iconBgColor="rgba(24, 144, 255, 0.1)"
-						data={[3, 4, 2, 5, 4, 3, summary.summary.totalReceivableCount + summary.summary.totalPayableCount]}
 					/>
 				</Col>
 			</Row>
