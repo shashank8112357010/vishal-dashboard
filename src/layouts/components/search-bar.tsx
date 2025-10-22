@@ -21,6 +21,7 @@ interface SearchItem {
 	path: string;
 	subtitle?: string;
 	type: "navigation" | "party" | "customer" | "inventory" | "invoice" | "employee";
+	searchableText: string; // Combined text for comprehensive search
 }
 
 // 高亮文本组件
@@ -73,6 +74,7 @@ const SearchBar = () => {
 							label: item.title,
 							path: item.path,
 							type: "navigation",
+							searchableText: `${item.title} ${item.path}`,
 						});
 					}
 					if (item.children) {
@@ -83,79 +85,129 @@ const SearchBar = () => {
 		};
 		flattenNav(navData);
 
-		// Parties
+		// Parties - Search by name, phone, GST, address, city, state, type
 		for (const party of parties) {
+			const searchableText = [
+				party.partyName,
+				party.phoneNumber,
+				party.gstNumber,
+				party.address,
+				party.city,
+				party.state,
+				party.partyType,
+				party._id,
+			]
+				.filter(Boolean)
+				.join(" ")
+				.toLowerCase();
+
 			items.push({
 				key: `party-${party._id}`,
 				label: party.partyName,
-				subtitle: `${party.phoneNumber} • ${party.partyType}`,
+				subtitle: `${party.phoneNumber} • ${party.partyType}${party.gstNumber ? ` • ${party.gstNumber}` : ""}`,
 				path: `/bicycle-shop/parties`,
 				type: "party",
+				searchableText,
 			});
 		}
 
-		// Customers
+		// Customers - Search by name, phone, email, address
 		for (const customer of customers) {
+			const searchableText = [customer.customerName, customer.phone, customer.email, customer.address, customer._id]
+				.filter(Boolean)
+				.join(" ")
+				.toLowerCase();
+
 			items.push({
 				key: `customer-${customer._id}`,
 				label: customer.customerName,
 				subtitle: `${customer.phone}${customer.email ? ` • ${customer.email}` : ""}`,
 				path: `/bicycle-shop/customers/${customer._id}`,
 				type: "customer",
+				searchableText,
 			});
 		}
 
-		// Inventory
+		// Inventory - Search by name, category, stock type
 		for (const item of inventory) {
+			const searchableText = [item.itemName, item.category, item.stockType, item.unitType, item._id]
+				.filter(Boolean)
+				.join(" ")
+				.toLowerCase();
+
 			items.push({
 				key: `inventory-${item._id}`,
 				label: item.itemName,
 				subtitle: `${item.category} • ${item.quantityAvailable} ${item.unitType} available`,
 				path: `/bicycle-shop/inventory`,
 				type: "inventory",
+				searchableText,
 			});
 		}
 
-		// Invoices
+		// Invoices - Search by invoice number, party name, type, amount
 		for (const invoice of invoices) {
 			const partyName = typeof invoice.partyId === "string" ? "" : invoice.partyId?.partyName || "";
+			const searchableText = [
+				invoice.invoiceNumber,
+				partyName,
+				invoice.invoiceType,
+				invoice.totalAmount.toString(),
+				invoice.paymentStatus,
+				invoice._id,
+			]
+				.filter(Boolean)
+				.join(" ")
+				.toLowerCase();
+
 			items.push({
 				key: `invoice-${invoice._id}`,
 				label: invoice.invoiceNumber,
 				subtitle: `${partyName} • ${invoice.invoiceType} • ₹${invoice.totalAmount}`,
 				path: `/bicycle-shop/invoices`,
 				type: "invoice",
+				searchableText,
 			});
 		}
 
-		// Employees
+		// Employees - Search by name, email, phone, position, department, employee ID
 		for (const employee of employees) {
+			const searchableText = [
+				employee.name,
+				employee.email,
+				employee.phoneNumber,
+				employee.position,
+				employee.department,
+				employee.employeeId,
+				employee._id,
+			]
+				.filter(Boolean)
+				.join(" ")
+				.toLowerCase();
+
 			items.push({
 				key: `employee-${employee._id}`,
 				label: employee.name,
-				subtitle: `${employee.phoneNumber} • ${employee.position}`,
+				subtitle: `${employee.phoneNumber} • ${employee.position} • ${employee.department}`,
 				path: `/bicycle-shop/employees`,
 				type: "employee",
+				searchableText,
 			});
 		}
 
 		return items;
 	}, [navData, parties, customers, inventory, invoices, employees]);
 
-	// Filter items based on search query
+	// Filter items based on search query - searches ALL fields
 	const searchResults = useMemo(() => {
 		if (!searchQuery) return allSearchableItems;
 
 		const query = searchQuery.toLowerCase();
 		return allSearchableItems.filter((item) => {
-			const label = item.type === "navigation" ? t(item.label) : item.label;
-			return (
-				label.toLowerCase().includes(query) ||
-				item.subtitle?.toLowerCase().includes(query) ||
-				item.path.toLowerCase().includes(query)
-			);
+			// Search in comprehensive searchableText field (includes all data)
+			return item.searchableText.includes(query);
 		});
-	}, [searchQuery, allSearchableItems, t]);
+	}, [searchQuery, allSearchableItems]);
 
 	// Group results by type
 	const groupedResults = useMemo(() => {
