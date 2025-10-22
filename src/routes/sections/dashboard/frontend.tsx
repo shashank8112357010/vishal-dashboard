@@ -14,6 +14,7 @@ export function getFrontendDashboardRoutes(): RouteObject[] {
 				{ path: "parties", element: Component("/pages/bicycle-shop/parties") },
 				{ path: "inventory", element: Component("/pages/bicycle-shop/inventory") },
 				{ path: "invoices", element: Component("/pages/bicycle-shop/invoices") },
+				{ path: "ledger", element: Component("/pages/bicycle-shop/ledger") },
 				{ path: "customers", element: Component("/pages/bicycle-shop/customers") },
 				{ path: "customers/:id", element: Component("/pages/bicycle-shop/customers/profile") },
 			],

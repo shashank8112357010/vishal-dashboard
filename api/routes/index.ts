@@ -4,6 +4,7 @@ import { customerController } from "../controllers/customerController.js";
 import { employeeController } from "../controllers/employeeController.js";
 import { inventoryController } from "../controllers/inventoryController.js";
 import { invoiceController } from "../controllers/invoiceController.js";
+import { ledgerController } from "../controllers/ledgerController.js";
 import { partyController } from "../controllers/partyController.js";
 import { payrollController } from "../controllers/payrollController.js";
 import { rolePermissionController } from "../controllers/rolePermissionController.js";
@@ -84,6 +85,16 @@ router.get("/payroll/:id", payrollController.getById);
 router.post("/payroll", authorize("manager", "admin"), payrollController.create);
 router.put("/payroll/:id", authorize("manager", "admin"), payrollController.update);
 router.delete("/payroll/:id", authorize("manager", "admin"), payrollController.delete);
+
+// Ledger routes (Bahikhata)
+// All roles can view ledger
+router.get("/ledger", ledgerController.getAll);
+router.get("/ledger/summary", ledgerController.getSummary);
+router.get("/ledger/:id", ledgerController.getById);
+// Only manager and admin can manage ledger entries
+router.post("/ledger", authorize("manager", "admin"), ledgerController.create);
+router.post("/ledger/:id/settlement", authorize("manager", "admin"), ledgerController.addSettlement);
+router.delete("/ledger/:id", authorize("admin"), ledgerController.delete);
 
 // Role Permission routes
 // Only admin can manage role permissions

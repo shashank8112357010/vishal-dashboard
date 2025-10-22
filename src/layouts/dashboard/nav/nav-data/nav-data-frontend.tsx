@@ -35,6 +35,11 @@ export const frontendNavData: NavProps["data"] = [
 				path: "/bicycle-shop/invoices",
 				icon: <Icon icon="solar:document-text-bold-duotone" size="24" />,
 			},
+			{
+				title: "Ledger (Bahikhata)",
+				path: "/bicycle-shop/ledger",
+				icon: <Icon icon="solar:book-bookmark-bold-duotone" size="24" />,
+			},
 		],
 	},
 	{

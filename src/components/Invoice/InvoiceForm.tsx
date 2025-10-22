@@ -302,6 +302,20 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ visible, invoice, viewOnly = 
 						</Select>
 					</Form.Item>
 
+					<Form.Item
+						name="paymentMode"
+						label="Payment Mode"
+						rules={[{ required: true, message: "Please select payment mode" }]}
+					>
+						<Select placeholder="Select payment mode">
+							<Option value="cash">Cash</Option>
+							<Option value="online">Online</Option>
+							<Option value="both">Both (Cash + Online)</Option>
+						</Select>
+					</Form.Item>
+				</div>
+
+				<div style={{ marginBottom: 16 }}>
 					<Form.Item label="Total Amount">
 						<div style={{ fontSize: "20px", fontWeight: "bold", color: "#1890ff" }}>{formatCurrency(totalAmount)}</div>
 					</Form.Item>

@@ -141,6 +141,7 @@ export interface Invoice {
 	items: InvoiceItem[];
 	invoiceType: "purchase" | "sale";
 	paymentStatus: "pending" | "partial" | "paid";
+	paymentMode?: "cash" | "online" | "both";
 	totalAmount: number;
 	balanceAmount: number;
 	notes?: string;
@@ -257,4 +258,40 @@ export interface RolePermission {
 	permissions: PermissionModule[];
 	createdAt: string;
 	updatedAt: string;
+}
+
+// Ledger (Bahikhata) Types
+export interface Settlement {
+	date: string;
+	amount: number;
+	mode: "cash" | "online" | "both";
+	notes?: string;
+}
+
+export interface LedgerEntry {
+	_id: string;
+	partyId: string | Party;
+	customerId?: string | Customer;
+	invoiceId?: string | Invoice;
+	transactionType: "receivable" | "payable";
+	originalAmount: number;
+	settledAmount: number;
+	balanceAmount: number;
+	description: string;
+	settlements: Settlement[];
+	status: "pending" | "partial" | "settled";
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface LedgerSummary {
+	receivables: LedgerEntry[];
+	payables: LedgerEntry[];
+	summary: {
+		totalReceivable: number;
+		totalPayable: number;
+		netPosition: number;
+		totalReceivableCount: number;
+		totalPayableCount: number;
+	};
 }

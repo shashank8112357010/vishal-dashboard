@@ -15,6 +15,7 @@ export interface IInvoice extends Document {
 	items: IInvoiceItem[];
 	invoiceType: "purchase" | "sale";
 	paymentStatus: "pending" | "partial" | "paid";
+	paymentMode?: "cash" | "online" | "both";
 	totalAmount: number;
 	balanceAmount: number;
 	notes?: string;
@@ -41,6 +42,10 @@ const InvoiceSchema = new Schema<IInvoice>(
 			type: String,
 			enum: ["pending", "partial", "paid"],
 			default: "pending",
+		},
+		paymentMode: {
+			type: String,
+			enum: ["cash", "online", "both"],
 		},
 		totalAmount: { type: Number, required: true },
 		balanceAmount: { type: Number, required: true },
