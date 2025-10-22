@@ -20,61 +20,6 @@ import { Progress } from "@/ui/progress";
 import { Text, Title } from "@/ui/typography";
 import { formatCurrency } from "@/utils/format-number";
 import { rgbAlpha } from "@/utils/theme";
-import BannerCard from "./banner-card";
-
-// Unused data - keeping for future reference
-/* const _quickStats = [
-	{
-		icon: "solar:wallet-outline",
-		label: "All Earnings",
-		value: "$3,020",
-		percent: 30.6,
-		color: "#3b82f6",
-		chart: [12, 18, 14, 16, 12, 10, 14, 18, 16, 14, 12, 10],
-	},
-	{
-		icon: "solar:graph-outline",
-		label: "Page Views",
-		value: "290K+",
-		percent: 30.6,
-		color: "#f59e42",
-		chart: [8, 12, 10, 14, 18, 16, 14, 12, 10, 14, 18, 16],
-	},
-	{
-		icon: "solar:checklist-outline",
-		label: "Total Task",
-		value: "839",
-		percent: 0,
-		color: "#10b981",
-		chart: [10, 14, 12, 16, 18, 14, 12, 10, 14, 18, 16, 12],
-	},
-	{
-		icon: "solar:download-outline",
-		label: "Download",
-		value: "2,067",
-		percent: -30.6,
-		color: "#ef4444",
-		chart: [16, 14, 12, 10, 14, 18, 16, 12, 10, 14, 18, 16],
-	},
-]; */
-
-/* const _monthlyRevenue = {
-	series: [
-		{
-			name: "Revenue",
-			data: [30, 40, 35, 50, 49, 70, 91, 60, 50, 55, 60, 65],
-		},
-	],
-	categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-	percent: 5.44,
-}; */
-
-/* const _projectTasks = [
-	{ label: "Horizontal Layout", color: "#3b82f6" },
-	{ label: "Invoice Generator", color: "#f59e42" },
-	{ label: "Package Upgrades", color: "#fbbf24" },
-	{ label: "Figma Auto Layout", color: "#10b981" },
-]; */
 
 const projectUsers = [
 	{ avatar: avatar1, name: "John" },
@@ -83,12 +28,6 @@ const projectUsers = [
 	{ avatar: avatar4, name: "Maciej" },
 	{ avatar: avatar5, name: "Kamil" },
 ];
-/* const _transactions = [
-	{ icon: "mdi:spotify", name: "Spotify Music", id: "#T11032", amount: 10000, time: "06:30 pm", status: "up" },
-	{ icon: "mdi:medium", name: "Medium", id: "#T11032", amount: -26, time: "08:30 pm", status: "down" },
-	{ icon: "mdi:uber", name: "Uber", id: "#T11032", amount: 210000, time: "08:40 pm", status: "up" },
-	{ icon: "mdi:taxi", name: "Ola Cabs", id: "#T11032", amount: 210000, time: "07:40 pm", status: "up" },
-]; */
 
 const totalIncome = {
 	series: [44, 55, 41, 17],
@@ -235,8 +174,6 @@ export default function Workbench() {
 
 	return (
 		<div className="flex flex-col gap-4 w-full">
-			<BannerCard />
-
 			{/* Quick Management Links */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 				<Button
