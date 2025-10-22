@@ -2,10 +2,15 @@ import cors from "cors";
 import express from "express";
 import "express-async-errors";
 import { config } from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 import { connectDB } from "./config/database.js";
 import routes from "./routes/index.js";
 
 config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -14,8 +19,19 @@ const PORT = process.env.PORT || 3002;
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// API Routes
 app.use("/api", routes);
+
+// Serve static files from the React app in production
+if (process.env.NODE_ENV === "production") {
+	// Serve static files from the dist folder
+	app.use(express.static(path.join(__dirname, "../../dist")));
+
+	// Handle React routing, return all requests to React app
+	app.get("*", (_req, res) => {
+		res.sendFile(path.join(__dirname, "../../dist/index.html"));
+	});
+}
 
 // Error handling middleware
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

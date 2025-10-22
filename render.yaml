@@ -1,0 +1,17 @@
+services:
+  # Web service for the full-stack app
+  - type: web
+    name: vishal-cycle-store
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false  # You'll set this in Render dashboard
+      - key: PORT
+        value: 10000
+    autoDeploy: true

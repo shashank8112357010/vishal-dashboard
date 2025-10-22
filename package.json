@@ -10,15 +10,16 @@
 		"dev:client": "vite",
 		"dev:frontend-only": "vite --host",
 		"dev:backend-only": "cd server && npm run dev",
-		"build": "npm run build:server && npm run build:client",
+		"build": "npm run install:deps && npm run build:client && npm run build:server",
 		"build:server": "cd server && npm run build",
-		"build:client": "tsc && vite build",
+		"build:client": "vite build",
+		"install:deps": "cd server && npm install",
 		"preview": "vite preview",
 		"start": "cd server && npm start",
 		"seed": "cd server && npm run seed",
 		"install:all": "npm install && cd server && npm install",
 		"clean": "rm -rf node_modules server/node_modules dist server/dist",
-		"preinstall": "lefthook install"
+		"postinstall": "test \"$NODE_ENV\" = \"production\" && npm run install:deps || echo 'Skipping postinstall in dev'"
 	},
 	"dependencies": {
 		"@ant-design/cssinjs": "^1.22.0",
