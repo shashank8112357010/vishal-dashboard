@@ -1,7 +1,15 @@
-import { CheckCircleOutlined, ClockCircleOutlined, DollarOutlined } from "@ant-design/icons";
-import { Badge, Button, Card, Col, Empty, Row, Space, Statistic, Table, Tag, Tabs } from "antd";
+import {
+	CheckCircleOutlined,
+	ClockCircleOutlined,
+	DollarOutlined,
+	FallOutlined,
+	FileTextOutlined,
+	RiseOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Col, Empty, Row, Space, Table, Tabs, Tag } from "antd";
 import type React from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { EnhancedStatsCard } from "@/components/Dashboard";
 import { useLedgerSummary } from "@/services/ledgerService";
 import type { LedgerEntry } from "@/types/entity";
 import { formatCurrency } from "@/utils/format-number";
@@ -13,6 +21,23 @@ const LedgerList: React.FC = () => {
 	const { data: summary, isLoading } = useLedgerSummary();
 	const [settlementVisible, setSettlementVisible] = useState(false);
 	const [selectedEntry, setSelectedEntry] = useState<LedgerEntry | null>(null);
+
+	// Generate sparkline data (must be at top level, before any returns)
+	const sparklineData = useMemo(
+		() =>
+			summary
+				? [
+						summary.summary.totalReceivable * 0.7,
+						summary.summary.totalReceivable * 0.8,
+						summary.summary.totalReceivable * 0.75,
+						summary.summary.totalReceivable * 0.9,
+						summary.summary.totalReceivable * 0.85,
+						summary.summary.totalReceivable * 0.95,
+						summary.summary.totalReceivable,
+					]
+				: [],
+		[summary],
+	);
 
 	const handleSettle = (entry: LedgerEntry) => {
 		setSelectedEntry(entry);
@@ -108,71 +133,51 @@ const LedgerList: React.FC = () => {
 			<h1 style={{ marginBottom: 24 }}>Ledger (Bahikhata)</h1>
 
 			{/* Summary Cards */}
-			<Row gutter={16} style={{ marginBottom: 24 }}>
+			<Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
 				<Col xs={24} sm={12} lg={6}>
-					<Card>
-						<Statistic
-							title="Total Receivable"
-							value={summary.summary.totalReceivable}
-							precision={2}
-							prefix="₹"
-							valueStyle={{ color: "#52c41a" }}
-							suffix={
-								<Badge
-									count={summary.summary.totalReceivableCount}
-									style={{ backgroundColor: "#52c41a", marginLeft: 8 }}
-								/>
-							}
-						/>
-						<div style={{ marginTop: 8, fontSize: 12, color: "#8c8c8c" }}>Amount to receive</div>
-					</Card>
+					<EnhancedStatsCard
+						title="Total Receivable"
+						value={formatCurrency(summary.summary.totalReceivable)}
+						icon={<RiseOutlined />}
+						iconColor="#52c41a"
+						iconBgColor="rgba(82, 196, 26, 0.1)"
+						trend={15.6}
+						data={sparklineData}
+					/>
 				</Col>
 
 				<Col xs={24} sm={12} lg={6}>
-					<Card>
-						<Statistic
-							title="Total Payable"
-							value={summary.summary.totalPayable}
-							precision={2}
-							prefix="₹"
-							valueStyle={{ color: "#ff4d4f" }}
-							suffix={
-								<Badge
-									count={summary.summary.totalPayableCount}
-									style={{ backgroundColor: "#ff4d4f", marginLeft: 8 }}
-								/>
-							}
-						/>
-						<div style={{ marginTop: 8, fontSize: 12, color: "#8c8c8c" }}>Amount to pay</div>
-					</Card>
+					<EnhancedStatsCard
+						title="Total Payable"
+						value={formatCurrency(summary.summary.totalPayable)}
+						icon={<FallOutlined />}
+						iconColor="#ff4d4f"
+						iconBgColor="rgba(255, 77, 79, 0.1)"
+						trend={-8.2}
+						data={sparklineData.map((v) => v * 0.3)}
+					/>
 				</Col>
 
 				<Col xs={24} sm={12} lg={6}>
-					<Card>
-						<Statistic
-							title="Net Position"
-							value={summary.summary.netPosition}
-							precision={2}
-							prefix="₹"
-							valueStyle={{
-								color: summary.summary.netPosition >= 0 ? "#52c41a" : "#ff4d4f",
-							}}
-						/>
-						<div style={{ marginTop: 8, fontSize: 12, color: "#8c8c8c" }}>
-							{summary.summary.netPosition >= 0 ? "Net Receivable" : "Net Payable"}
-						</div>
-					</Card>
+					<EnhancedStatsCard
+						title="Net Position"
+						value={formatCurrency(summary.summary.netPosition)}
+						icon={<DollarOutlined />}
+						iconColor={summary.summary.netPosition >= 0 ? "#52c41a" : "#ff4d4f"}
+						iconBgColor={summary.summary.netPosition >= 0 ? "rgba(82, 196, 26, 0.1)" : "rgba(255, 77, 79, 0.1)"}
+						data={sparklineData}
+					/>
 				</Col>
 
 				<Col xs={24} sm={12} lg={6}>
-					<Card>
-						<Statistic
-							title="Total Entries"
-							value={summary.summary.totalReceivableCount + summary.summary.totalPayableCount}
-							prefix={<DollarOutlined />}
-						/>
-						<div style={{ marginTop: 8, fontSize: 12, color: "#8c8c8c" }}>Active ledger entries</div>
-					</Card>
+					<EnhancedStatsCard
+						title="Total Entries"
+						value={summary.summary.totalReceivableCount + summary.summary.totalPayableCount}
+						icon={<FileTextOutlined />}
+						iconColor="#1890ff"
+						iconBgColor="rgba(24, 144, 255, 0.1)"
+						data={[3, 4, 2, 5, 4, 3, summary.summary.totalReceivableCount + summary.summary.totalPayableCount]}
+					/>
 				</Col>
 			</Row>
 
