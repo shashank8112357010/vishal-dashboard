@@ -1,9 +1,9 @@
 import cors from "cors";
 import express from "express";
 import "express-async-errors";
-import { config } from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { config } from "dotenv";
 import { connectDB } from "./config/database.js";
 import routes from "./routes/index.js";
 
