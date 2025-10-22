@@ -36,10 +36,22 @@ axiosInstance.interceptors.response.use(
 	(error: AxiosError<Result>) => {
 		const { response, message } = error || {};
 		const errMsg = response?.data?.message || message || t("sys.api.errorMessage");
-		toast.error(errMsg, { position: "top-center" });
+
+		// Handle 401 Unauthorized - Clear user state and redirect to login
 		if (response?.status === 401) {
 			userStore.getState().actions.clearUserInfoAndToken();
+			toast.error("Session expired. Please login again.", { position: "top-center" });
+
+			// Redirect to login page
+			// Use window.location to ensure a full page reload and clear any stale state
+			if (!window.location.pathname.includes("/login")) {
+				window.location.href = "/login";
+			}
+			return Promise.reject(error);
 		}
+
+		// Show error toast for other errors
+		toast.error(errMsg, { position: "top-center" });
 		return Promise.reject(error);
 	},
 );
