@@ -34,11 +34,17 @@ axiosInstance.interceptors.response.use(
 		throw new Error(message || t("sys.api.apiRequestFailed"));
 	},
 	(error: AxiosError<Result>) => {
-		const { response, message } = error || {};
+		const { response, message, config } = error || {};
 		const errMsg = response?.data?.message || message || t("sys.api.errorMessage");
 
 		// Handle 401 Unauthorized - Clear user state and redirect to login
-		if (response?.status === 401) {
+		// But skip this for auth endpoints (login, signup, refresh) to show proper error messages
+		const isAuthEndpoint =
+			config?.url?.includes("/auth/signin") ||
+			config?.url?.includes("/auth/signup") ||
+			config?.url?.includes("/auth/refresh");
+
+		if (response?.status === 401 && !isAuthEndpoint) {
 			userStore.getState().actions.clearUserInfoAndToken();
 			toast.error("Session expired. Please login again.", { position: "top-center" });
 
@@ -50,7 +56,7 @@ axiosInstance.interceptors.response.use(
 			return Promise.reject(error);
 		}
 
-		// Show error toast for other errors
+		// Show error toast for all other errors (including auth endpoint errors)
 		toast.error(errMsg, { position: "top-center" });
 		return Promise.reject(error);
 	},
