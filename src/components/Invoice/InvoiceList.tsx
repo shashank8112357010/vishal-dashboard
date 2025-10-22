@@ -171,12 +171,20 @@ const InvoiceList: React.FC = () => {
 		<>
 			<Card>
 				<div style={{ marginBottom: 16 }}>
-					<div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-						<Space>
+					<div
+						style={{
+							display: "flex",
+							flexWrap: "wrap",
+							gap: "12px",
+							justifyContent: "space-between",
+							marginBottom: 16,
+						}}
+					>
+						<Space wrap>
 							<Input
 								placeholder="Search by invoice # or party name"
 								prefix={<SearchOutlined />}
-								style={{ width: 300 }}
+								style={{ width: "100%", minWidth: 250, maxWidth: 300 }}
 								value={searchText}
 								onChange={(e) => setSearchText(e.target.value)}
 							/>
@@ -192,6 +200,7 @@ const InvoiceList: React.FC = () => {
 					dataSource={filteredInvoices}
 					rowKey="_id"
 					loading={isLoading}
+					scroll={{ x: 1400 }}
 					pagination={{
 						defaultPageSize: 10,
 						showSizeChanger: true,

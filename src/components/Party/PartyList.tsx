@@ -115,11 +115,13 @@ const PartyList: React.FC = () => {
 	return (
 		<>
 			<Card>
-				<div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between" }}>
+				<div
+					style={{ marginBottom: 16, display: "flex", flexWrap: "wrap", gap: "12px", justifyContent: "space-between" }}
+				>
 					<Input
 						placeholder="Search by name, phone, or city"
 						prefix={<SearchOutlined />}
-						style={{ width: 300 }}
+						style={{ width: "100%", minWidth: 250, maxWidth: 300 }}
 						value={searchText}
 						onChange={(e) => setSearchText(e.target.value)}
 					/>
@@ -132,6 +134,7 @@ const PartyList: React.FC = () => {
 					dataSource={filteredParties}
 					rowKey="_id"
 					loading={isLoading}
+					scroll={{ x: 1000 }}
 					pagination={{
 						defaultPageSize: 10,
 						showSizeChanger: true,
