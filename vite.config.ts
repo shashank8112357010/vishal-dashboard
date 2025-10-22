@@ -33,6 +33,13 @@ export default defineConfig(({ mode }) => {
 			open: true,
 			host: true,
 			port: 5173,
+			hmr: {
+				overlay: false, // Disable error overlay to reduce CPU
+			},
+			watch: {
+				// Reduce file watching overhead
+				ignored: ["**/node_modules/**", "**/dist/**", "**/.git/**"],
+			},
 			proxy: {
 				"/api": {
 					target: "http://localhost:3002",

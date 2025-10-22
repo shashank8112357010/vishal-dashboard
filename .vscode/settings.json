@@ -35,5 +35,20 @@
 	"[jsonc]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
-	"svg.preview.background": "dark-transparent"
+	"svg.preview.background": "dark-transparent",
+
+	"files.watcherExclude": {
+		"**/node_modules/**": true,
+		"**/dist/**": true,
+		"**/.git/**": true,
+		"**/server/node_modules/**": true,
+		"**/server/dist/**": true
+	},
+	"search.exclude": {
+		"**/node_modules": true,
+		"**/dist": true,
+		"**/server/node_modules": true,
+		"**/server/dist": true,
+		"**/.git": true
+	}
 }
