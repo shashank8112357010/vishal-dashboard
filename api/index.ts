@@ -22,20 +22,36 @@ app.use(express.json());
 // API Routes
 app.use("/api", routes);
 
-// Serve static files from the React app in production
+// Serve static files from the React app
+const clientPath = path.join(__dirname, "client");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("__dirname:", __dirname);
+console.log("Client path:", clientPath);
+
+// Always serve static files in production
 if (process.env.NODE_ENV === "production") {
-	const clientPath = path.join(__dirname, "client");
-	console.log("Serving static files from:", clientPath);
+	console.log("Production mode: Serving static files");
 
 	// Serve static files from the client folder
-	app.use(express.static(clientPath));
+	app.use(
+		express.static(clientPath, {
+			index: false, // Don't auto-serve index.html, we'll handle it explicitly
+		}),
+	);
 
 	// Handle React routing, return all requests to React app
 	app.get("*", (_req, res) => {
 		const indexPath = path.join(clientPath, "index.html");
-		console.log("Serving index.html from:", indexPath);
-		res.sendFile(indexPath);
+		console.log("Attempting to serve index.html from:", indexPath);
+		res.sendFile(indexPath, (err) => {
+			if (err) {
+				console.error("Error serving index.html:", err);
+				res.status(500).send("Error loading application");
+			}
+		});
 	});
+} else {
+	console.log("Development mode: Not serving static files");
 }
 
 // Error handling middleware
