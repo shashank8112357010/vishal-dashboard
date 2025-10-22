@@ -5,9 +5,11 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: NODE_ENV=development npm install --legacy-peer-deps && npm run build
-    startCommand: NODE_ENV=production npm start
+    buildCommand: npm install --production=false --legacy-peer-deps && npm run build
+    startCommand: npm start
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: MONGO_URI
         sync: false  # You'll set this in Render dashboard
       - key: PORT
