@@ -20,15 +20,17 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ visible, customer, onClose 
 	const updateMutation = useUpdateCustomer();
 
 	useEffect(() => {
-		if (customer) {
-			form.setFieldsValue({
-				...customer,
-				birthday: customer.birthday ? dayjs(customer.birthday) : undefined,
-			});
-		} else {
-			form.resetFields();
+		if (visible) {
+			if (customer) {
+				form.setFieldsValue({
+					...customer,
+					birthday: customer.birthday ? dayjs(customer.birthday) : undefined,
+				});
+			} else {
+				form.resetFields();
+			}
 		}
-	}, [customer, form]);
+	}, [customer, form, visible]);
 
 	const handleSubmit = async () => {
 		try {

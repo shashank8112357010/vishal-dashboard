@@ -69,6 +69,7 @@ router.delete("/customers/:id", authorize("manager", "admin"), customerControlle
 // Attendance routes
 // All roles can view attendance
 router.get("/attendance", attendanceController.getAll);
+router.get("/attendance/month-summary", attendanceController.getMonthSummary);
 router.get("/attendance/:id", attendanceController.getById);
 // Only manager and admin can manage attendance
 router.post("/attendance", authorize("manager", "admin"), attendanceController.create);
