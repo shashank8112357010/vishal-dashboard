@@ -18,5 +18,12 @@
 
 		"light": "Light",
 		"dark": "Dark"
+	},
+	"bicycle": {
+		"shop": "Bicycle Shop",
+		"dashboard": "Dashboard",
+		"parties": "Parties",
+		"inventory": "Inventory",
+		"invoices": "Invoices"
 	}
 }

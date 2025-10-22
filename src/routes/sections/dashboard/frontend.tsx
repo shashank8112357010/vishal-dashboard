@@ -7,6 +7,16 @@ export function getFrontendDashboardRoutes(): RouteObject[] {
 		{ path: "workbench", element: Component("/pages/dashboard/workbench") },
 		{ path: "analysis", element: Component("/pages/dashboard/analysis") },
 		{
+			path: "bicycle-shop",
+			children: [
+				{ index: true, element: Component("/pages/bicycle-shop/dashboard") },
+				{ path: "dashboard", element: Component("/pages/bicycle-shop/dashboard") },
+				{ path: "parties", element: Component("/pages/bicycle-shop/parties") },
+				{ path: "inventory", element: Component("/pages/bicycle-shop/inventory") },
+				{ path: "invoices", element: Component("/pages/bicycle-shop/invoices") },
+			],
+		},
+		{
 			path: "components",
 			children: [
 				{ index: true, element: <Navigate to="animate" replace /> },

@@ -1,10 +1,9 @@
+import type { CSSProperties } from "react";
 import bgImg from "@/assets/images/background/banner-1.png";
 import Character from "@/assets/images/characters/character_3.png";
 import { Icon } from "@/components/icon";
-import { GLOBAL_CONFIG } from "@/global-config";
 import { Button } from "@/ui/button";
 import { Text, Title } from "@/ui/typography";
-import type { CSSProperties } from "react";
 
 export default function BannerCard() {
 	const bgStyle: CSSProperties = {
@@ -28,20 +27,20 @@ export default function BannerCard() {
 					<div className="col-span-2 md:col-span-1">
 						<div className="flex flex-col gap-4">
 							<Title as="h2" className="text-white">
-								Explore Redesigned {GLOBAL_CONFIG.appName}
+								🚴‍♂️ Bicycle Shop Management
 							</Title>
 							<Text className="text-white">
-								The rand new User Interface with power of Shadcn/ui Components. Explore the Endless possibilities with{" "}
-								{GLOBAL_CONFIG.appName}.
+								Manage your bicycle shop inventory, track sales, handle supplier relationships, and monitor business
+								performance all in one place.
 							</Text>
 
 							<Button
 								variant="outline"
 								className="w-fit bg-white text-black"
-								onClick={() => window.open("https://discord.gg/fXemAXVNDa")}
+								onClick={() => (window.location.href = "/bicycle-shop/dashboard")}
 							>
-								<Icon icon="carbon:logo-discord" size={24} />
-								<span className="ml-2 font-black">Join Discord</span>
+								<Icon icon="solar:chart-2-bold-duotone" size={24} />
+								<span className="ml-2 font-black">View Dashboard</span>
 							</Button>
 						</div>
 					</div>

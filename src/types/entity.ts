@@ -82,7 +82,9 @@ export interface Menu extends CommonOptions, MenuMetaInfo {
 	type: PermissionType;
 }
 
-export type MenuMetaInfo = Partial<Pick<NavItemDataProps, "path" | "icon" | "caption" | "info" | "disabled" | "auth" | "hidden">> & {
+export type MenuMetaInfo = Partial<
+	Pick<NavItemDataProps, "path" | "icon" | "caption" | "info" | "disabled" | "auth" | "hidden">
+> & {
 	externalLink?: URL;
 	component?: string;
 };
@@ -90,3 +92,69 @@ export type MenuMetaInfo = Partial<Pick<NavItemDataProps, "path" | "icon" | "cap
 export type MenuTree = Menu & {
 	children?: MenuTree[];
 };
+
+// Bicycle Shop Types
+export interface Party {
+	_id: string;
+	partyName: string;
+	partyType: "creditor" | "debtor";
+	phoneNumber: string;
+	state: string;
+	city: string;
+	gstNumber?: string;
+	address: string;
+	balanceAmount: number;
+	transactions: string[];
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface InventoryItem {
+	_id: string;
+	itemName: string;
+	category: "bicycle" | "spare_part";
+	unitType: "piece" | "set" | "pair" | "dozen" | "packet";
+	bundleCount: number;
+	quantityAvailable: number;
+	stockType: "loose" | "fitted";
+	purchasePrice: number;
+	sellingPrice: number;
+	lastBorrowedDate?: string;
+	partyId?: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface InvoiceItem {
+	itemId: string | InventoryItem;
+	quantity: number;
+	pricePerUnit: number;
+	totalAmount: number;
+}
+
+export interface Invoice {
+	_id: string;
+	invoiceNumber: string;
+	date: string;
+	partyId: string | Party;
+	items: InvoiceItem[];
+	invoiceType: "purchase" | "sale";
+	paymentStatus: "pending" | "partial" | "paid";
+	totalAmount: number;
+	balanceAmount: number;
+	notes?: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface StockHistory {
+	_id: string;
+	itemId: string;
+	change: number;
+	reason: string;
+	previousQty: number;
+	newQty: number;
+	date: string;
+	createdAt: string;
+	updatedAt: string;
+}

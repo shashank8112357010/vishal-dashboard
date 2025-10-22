@@ -1,3 +1,4 @@
+import { useState } from "react";
 import avatar1 from "@/assets/images/avatars/avatar-1.png";
 import avatar2 from "@/assets/images/avatars/avatar-2.png";
 import avatar3 from "@/assets/images/avatars/avatar-3.png";
@@ -6,16 +7,22 @@ import avatar5 from "@/assets/images/avatars/avatar-5.png";
 import { Chart, useChart } from "@/components/chart";
 import Icon from "@/components/icon/icon";
 import { GLOBAL_CONFIG } from "@/global-config";
+import { useInventory } from "@/services/inventoryService";
+import { useInvoices } from "@/services/invoiceService";
+import { useParties } from "@/services/partyService";
+import { useInventoryStore } from "@/store/useInventoryStore";
+import { useInvoiceStore } from "@/store/useInvoiceStore";
+import type { Party } from "@/types/entity";
 import { Avatar, AvatarImage } from "@/ui/avatar";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { Progress } from "@/ui/progress";
 import { Text, Title } from "@/ui/typography";
+import { formatCurrency } from "@/utils/format-number";
 import { rgbAlpha } from "@/utils/theme";
-import { useState } from "react";
 import BannerCard from "./banner-card";
 
-const quickStats = [
+const _quickStats = [
 	{
 		icon: "solar:wallet-outline",
 		label: "All Earnings",
@@ -50,7 +57,7 @@ const quickStats = [
 	},
 ];
 
-const monthlyRevenue = {
+const _monthlyRevenue = {
 	series: [
 		{
 			name: "Revenue",
@@ -61,7 +68,7 @@ const monthlyRevenue = {
 	percent: 5.44,
 };
 
-const projectTasks = [
+const _projectTasks = [
 	{ label: "Horizontal Layout", color: "#3b82f6" },
 	{ label: "Invoice Generator", color: "#f59e42" },
 	{ label: "Package Upgrades", color: "#fbbf24" },
@@ -75,7 +82,7 @@ const projectUsers = [
 	{ avatar: avatar4, name: "Maciej" },
 	{ avatar: avatar5, name: "Kamil" },
 ];
-const transactions = [
+const _transactions = [
 	{ icon: "mdi:spotify", name: "Spotify Music", id: "#T11032", amount: 10000, time: "06:30 pm", status: "up" },
 	{ icon: "mdi:medium", name: "Medium", id: "#T11032", amount: -26, time: "08:30 pm", status: "down" },
 	{ icon: "mdi:uber", name: "Uber", id: "#T11032", amount: 210000, time: "08:40 pm", status: "up" },
@@ -95,8 +102,82 @@ const totalIncome = {
 
 export default function Workbench() {
 	const [activeTab, setActiveTab] = useState("All Transaction");
+
+	// Load bicycle shop data
+	const { data: parties = [] } = useParties();
+	const { data: inventory = [] } = useInventory();
+	const { data: invoices = [] } = useInvoices();
+	const { getTotalSales, getTotalPurchases } = useInvoiceStore();
+	const { lowStockItems } = useInventoryStore();
+
+	// Calculate bicycle shop stats
+	const totalSales = getTotalSales();
+	const totalPurchases = getTotalPurchases();
+	const totalInventoryValue = inventory.reduce((sum, item) => sum + item.quantityAvailable * item.purchasePrice, 0);
+	const lowStockCount = lowStockItems.length;
+
+	// Update quick stats with bicycle shop data
+	const bicycleShopStats = [
+		{
+			icon: "solar:wallet-outline",
+			label: "Total Sales",
+			value: formatCurrency(totalSales),
+			percent: totalSales > totalPurchases ? 15.6 : -5.2,
+			color: "#10b981",
+			chart: [12, 18, 14, 16, 20, 18, 24, 28, 26, 24, 22, 20],
+		},
+		{
+			icon: "solar:box-outline",
+			label: "Inventory Value",
+			value: formatCurrency(totalInventoryValue),
+			percent: 8.2,
+			color: "#3b82f6",
+			chart: [8, 12, 10, 14, 18, 16, 14, 12, 10, 14, 18, 16],
+		},
+		{
+			icon: "solar:users-group-rounded-outline",
+			label: "Total Parties",
+			value: parties.length.toString(),
+			percent: 0,
+			color: "#f59e42",
+			chart: [10, 14, 12, 16, 18, 14, 12, 10, 14, 18, 16, 12],
+		},
+		{
+			icon: "solar:danger-triangle-outline",
+			label: "Low Stock Items",
+			value: lowStockCount.toString(),
+			percent: lowStockCount > 5 ? -12.3 : 0,
+			color: lowStockCount > 5 ? "#ef4444" : "#10b981",
+			chart: [16, 14, 12, 10, 14, 18, 16, 12, 10, 14, 18, 16],
+		},
+	];
+
+	// Recent invoices for transactions
+	const recentInvoices = invoices.slice(0, 4).map((invoice) => {
+		const party = invoice.partyId as Party;
+		return {
+			icon: invoice.invoiceType === "sale" ? "solar:card-send-outline" : "solar:card-receive-outline",
+			name: party?.partyName || "Unknown Party",
+			id: `#${invoice.invoiceNumber}`,
+			amount: invoice.invoiceType === "sale" ? invoice.totalAmount : -invoice.totalAmount,
+			time: new Date(invoice.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+			status: invoice.invoiceType === "sale" ? "up" : "down",
+		};
+	});
+
+	// Sales data for monthly revenue chart
+	const monthlySalesData = {
+		series: [
+			{
+				name: "Sales",
+				data: [30000, 45000, 35000, 55000, 49000, 70000, 91000, 60000, 50000, 65000, 70000, 75000],
+			},
+		],
+		categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+		percent: (((totalSales - totalPurchases) / Math.max(totalPurchases, 1)) * 100).toFixed(1),
+	};
 	const chartOptions = useChart({
-		xaxis: { categories: monthlyRevenue.categories },
+		xaxis: { categories: monthlySalesData.categories },
 		chart: { toolbar: { show: false } },
 		grid: { show: false },
 		stroke: { curve: "smooth" },
@@ -116,9 +197,46 @@ export default function Workbench() {
 	return (
 		<div className="flex flex-col gap-4 w-full">
 			<BannerCard />
+
+			{/* Quick Management Links */}
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+				<Button
+					variant="outline"
+					className="h-16 flex flex-col gap-2"
+					onClick={() => (window.location.href = "/bicycle-shop/inventory")}
+				>
+					<Icon icon="solar:box-bold-duotone" size={24} />
+					<span>Manage Inventory</span>
+				</Button>
+				<Button
+					variant="outline"
+					className="h-16 flex flex-col gap-2"
+					onClick={() => (window.location.href = "/bicycle-shop/parties")}
+				>
+					<Icon icon="solar:users-group-rounded-bold-duotone" size={24} />
+					<span>Manage Parties</span>
+				</Button>
+				<Button
+					variant="outline"
+					className="h-16 flex flex-col gap-2"
+					onClick={() => (window.location.href = "/bicycle-shop/invoices")}
+				>
+					<Icon icon="solar:document-text-bold-duotone" size={24} />
+					<span>Manage Invoices</span>
+				</Button>
+				<Button
+					variant="outline"
+					className="h-16 flex flex-col gap-2"
+					onClick={() => (window.location.href = "/bicycle-shop/dashboard")}
+				>
+					<Icon icon="solar:chart-2-bold-duotone" size={24} />
+					<span>Shop Dashboard</span>
+				</Button>
+			</div>
+
 			{/* 顶部四个统计卡片 */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-				{quickStats.map((stat) => (
+				{bicycleShopStats.map((stat) => (
 					<Card key={stat.label} className="flex flex-col justify-between h-full">
 						<CardContent className="flex flex-col gap-2 p-4">
 							<div className="flex items-center gap-2">
@@ -169,35 +287,53 @@ export default function Workbench() {
 					<CardContent className="p-6">
 						<div className="flex items-center justify-between mb-2">
 							<Text variant="body2" className="font-semibold">
-								Monthly Revenue
+								Monthly Sales
 							</Text>
-							<span className="flex items-center gap-1 text-green-500 font-bold text-sm">
-								<Icon icon="mdi:arrow-up" size={16} />
-								{monthlyRevenue.percent}%
+							<span
+								className={`flex items-center gap-1 font-bold text-sm ${parseFloat(monthlySalesData.percent) > 0 ? "text-green-500" : "text-red-500"}`}
+							>
+								<Icon icon={parseFloat(monthlySalesData.percent) > 0 ? "mdi:arrow-up" : "mdi:arrow-down"} size={16} />
+								{Math.abs(parseFloat(monthlySalesData.percent))}%
 							</span>
 						</div>
-						<Chart type="area" height={220} options={chartOptions} series={monthlyRevenue.series} />
+						<Chart type="area" height={220} options={chartOptions} series={monthlySalesData.series} />
 					</CardContent>
 				</Card>
 				<Card className="flex flex-col gap-4 p-6">
 					<Text variant="body2" className="font-semibold  mb-2">
-						Project - {GLOBAL_CONFIG.appName}
+						Bicycle Shop Stats
 					</Text>
 					<div className="flex items-center justify-between mb-2">
-						<Text variant="body2">Release v1.2.0</Text>
-						<span className="text-xs font-bold text-blue-500">70%</span>
+						<Text variant="body2">Low Stock Items</Text>
+						<span className={`text-xs font-bold ${lowStockCount > 5 ? "text-red-500" : "text-green-500"}`}>
+							{lowStockCount} items
+						</span>
 					</div>
-					<Progress value={70} />
+					<Progress value={Math.max(0, 100 - (lowStockCount / Math.max(inventory.length, 1)) * 100)} />
 					<ul className="flex flex-col gap-2 mt-2 mb-4">
-						{projectTasks.map((task) => (
-							<li key={task.label} className="flex items-center gap-2">
-								<span className="inline-block w-2 h-2 rounded-full" style={{ background: task.color }} />
-								<Text variant="body2">{task.label}</Text>
-							</li>
-						))}
+						<li className="flex items-center gap-2">
+							<span className="inline-block w-2 h-2 rounded-full bg-green-500" />
+							<Text variant="body2">Sales: {formatCurrency(totalSales)}</Text>
+						</li>
+						<li className="flex items-center gap-2">
+							<span className="inline-block w-2 h-2 rounded-full bg-blue-500" />
+							<Text variant="body2">Inventory: {inventory.length} items</Text>
+						</li>
+						<li className="flex items-center gap-2">
+							<span className="inline-block w-2 h-2 rounded-full bg-orange-500" />
+							<Text variant="body2">Parties: {parties.length}</Text>
+						</li>
+						<li className="flex items-center gap-2">
+							<span className="inline-block w-2 h-2 rounded-full bg-purple-500" />
+							<Text variant="body2">Invoices: {invoices.length}</Text>
+						</li>
 					</ul>
-					<Button className="w-full mt-auto" size="sm">
-						<Icon icon="mdi:plus" size={18} /> Add task
+					<Button
+						className="w-full mt-auto"
+						size="sm"
+						onClick={() => (window.location.href = "/bicycle-shop/inventory")}
+					>
+						<Icon icon="mdi:eye" size={18} /> View Inventory
 					</Button>
 				</Card>
 			</div>
@@ -206,24 +342,29 @@ export default function Workbench() {
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 				<Card className="lg:col-span-2 flex flex-col gap-4 p-6">
 					<Text variant="body2" className="font-semibold mb-2">
-						Project overview
+						Business overview
 					</Text>
 					<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 						<div>
-							<Text variant="body2">Total Tasks</Text>
+							<Text variant="body2">Total Revenue</Text>
 							<Title as="h3" className="text-xl font-bold">
-								34,686
+								{formatCurrency(totalSales)}
 							</Title>
 						</div>
 						<div>
-							<Text variant="body2">Pending Tasks</Text>
+							<Text variant="body2">Profit Margin</Text>
 							<Title as="h3" className="text-xl font-bold">
-								3,786
+								{formatCurrency(totalSales - totalPurchases)}
 							</Title>
 						</div>
 						<div className="flex-1 flex items-center justify-end">
-							<Button className="w-48" size="sm" variant="default">
-								<Icon icon="mdi:plus" size={18} /> Add project
+							<Button
+								className="w-48"
+								size="sm"
+								variant="default"
+								onClick={() => (window.location.href = "/bicycle-shop/invoices")}
+							>
+								<Icon icon="mdi:plus" size={18} /> New Invoice
 							</Button>
 						</div>
 					</div>
@@ -282,7 +423,7 @@ export default function Workbench() {
 					<div className="flex-1 overflow-x-auto">
 						<table className="w-full text-sm">
 							<tbody>
-								{transactions.map((tx) => (
+								{recentInvoices.map((tx) => (
 									<tr key={tx.name} className="border-b last:border-0">
 										<td className="py-2 w-12">
 											<span className="inline-flex items-center justify-center w-10 h-10 rounded-full">
@@ -312,10 +453,16 @@ export default function Workbench() {
 						</table>
 					</div>
 					<div className="flex items-center justify-between mt-4 gap-2">
-						<Button variant="outline" className="flex-1">
-							View all
+						<Button
+							variant="outline"
+							className="flex-1"
+							onClick={() => (window.location.href = "/bicycle-shop/invoices")}
+						>
+							View all Invoices
 						</Button>
-						<Button className="flex-1">Create new</Button>
+						<Button className="flex-1" onClick={() => (window.location.href = "/bicycle-shop/invoices")}>
+							Create Invoice
+						</Button>
 					</div>
 				</Card>
 				<Card className="flex flex-col p-6">

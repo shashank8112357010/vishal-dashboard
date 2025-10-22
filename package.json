@@ -1,13 +1,21 @@
 {
-	"name": "slash-admin",
+	"name": "bicycle-shop-monorepo",
+	"version": "1.0.0",
 	"private": true,
-	"version": "0.0.0",
 	"type": "module",
-	"homepage": "https://github.com/d3george/slash-admin",
+	"description": "Bicycle Shop Management System - Monorepo with React frontend and Express backend",
 	"scripts": {
-		"dev": "vite",
-		"build": "tsc && vite build",
+		"dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+		"dev:server": "cd server && npm run dev",
+		"dev:client": "vite",
+		"build": "npm run build:server && npm run build:client",
+		"build:server": "cd server && npm run build",
+		"build:client": "tsc && vite build",
 		"preview": "vite preview",
+		"start": "cd server && npm start",
+		"seed": "cd server && npm run seed",
+		"install:all": "npm install && cd server && npm install",
+		"clean": "rm -rf node_modules server/node_modules dist server/dist",
 		"preinstall": "lefthook install"
 	},
 	"dependencies": {
@@ -39,7 +47,7 @@
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",
 		"color": "^4.2.3",
-		"date-fns": "^4.1.0",
+		"date-fns": "^3.6.0",
 		"dayjs": "^1.11.13",
 		"highlight.js": "^11.10.0",
 		"i18next": "^23.16.5",
@@ -53,7 +61,7 @@
 		"ramda": "^0.29.1",
 		"react": "^19.1.0",
 		"react-apexcharts": "^1.5.0",
-		"react-day-picker": "8.10.1",
+		"react-day-picker": "^8.10.1",
 		"react-dom": "^19.1.0",
 		"react-helmet-async": "^2.0.5",
 		"react-hook-form": "^7.56.1",
@@ -81,6 +89,7 @@
 		"@types/react": "^19.0.12",
 		"@types/react-dom": "^19.0.4",
 		"@types/styled-components": "^5.1.34",
+		"concurrently": "^8.2.2",
 		"lefthook": "^1.8.2",
 		"msw": "^2.6.4",
 		"react-scan": "^0.3.4",
@@ -91,10 +100,26 @@
 		"vite": "^6.2.0",
 		"vite-tsconfig-paths": "^5.1.2"
 	},
-	"engines": {
-		"node": "20.*"
+	"keywords": [
+		"bicycle-shop",
+		"inventory-management",
+		"invoice-system",
+		"react",
+		"express",
+		"mongodb",
+		"typescript",
+		"monorepo"
+	],
+	"author": "Bicycle Shop Management",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/your-username/bicycle-shop-monorepo.git"
 	},
-	"packageManager": "pnpm@10.8.0",
+	"engines": {
+		"node": ">=20.0.0",
+		"npm": ">=8.0.0"
+	},
 	"msw": {
 		"workerDirectory": [
 			"public"

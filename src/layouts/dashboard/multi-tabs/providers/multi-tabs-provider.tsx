@@ -51,7 +51,7 @@ export function MultiTabsProvider({ children }: { children: React.ReactNode }) {
 						...currentRouteMeta,
 						key,
 						children,
-						timeStamp: new Date().getTime().toString(),
+						timeStamp: Date.now().toString(),
 					},
 				];
 			}
