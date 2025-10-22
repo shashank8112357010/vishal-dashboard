@@ -1,10 +1,8 @@
 import { setupWorker } from "msw/browser";
-import { mockTokenExpired } from "./handlers/_demo";
-import { menuList } from "./handlers/_menu";
-import { userList } from "./handlers/_user";
 
-// signIn removed - using real backend authentication
-const handlers = [userList, mockTokenExpired, menuList];
+// All mock handlers removed - using real backend for all APIs
+// MSW worker kept for development mode but with no handlers
+const handlers: never[] = [];
 const worker = setupWorker(...handlers);
 
 export { worker };

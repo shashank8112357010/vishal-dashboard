@@ -13,10 +13,15 @@ import { routesSection } from "./routes/sections";
 import { urlJoin } from "./utils";
 
 await registerLocalIcons();
-await worker.start({
-	onUnhandledRequest: "bypass",
-	serviceWorker: { url: urlJoin(GLOBAL_CONFIG.publicPath, "mockServiceWorker.js") },
-});
+
+// Only start MSW in development mode
+if (import.meta.env.DEV) {
+	await worker.start({
+		onUnhandledRequest: "bypass",
+		serviceWorker: { url: urlJoin(GLOBAL_CONFIG.publicPath, "mockServiceWorker.js") },
+	});
+}
+
 if (GLOBAL_CONFIG.routerMode === "backend") {
 	await menuService.getMenuList();
 }

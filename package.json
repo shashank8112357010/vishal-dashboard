@@ -17,6 +17,7 @@
 		"start": "node dist/index.js",
 		"seed": "tsx api/utils/seed.ts",
 		"seed:users": "tsx api/utils/seedUsers.ts",
+		"seed:all": "tsx api/utils/seedAll.ts",
 		"clean": "rm -rf node_modules dist"
 	},
 	"dependencies": {

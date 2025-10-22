@@ -1,9 +1,6 @@
-import { faker } from "@faker-js/faker";
+// Stub file - Mock utilities removed, using real backend
+// Kept for template compatibility only
 
-export const fakeAvatars = (count: number) => {
-	const result: string[] = [];
-	for (let index = 0; index < count; index += 1) {
-		result.push(faker.image.avatarGitHub());
-	}
-	return result;
+export const fakeAvatars = (count: number): string[] => {
+	return Array.from({ length: count }, (_, i) => `https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`);
 };
