@@ -137,6 +137,7 @@ export interface Invoice {
 	invoiceNumber: string;
 	date: string;
 	partyId: string | Party;
+	customerId?: string | Customer;
 	items: InvoiceItem[];
 	invoiceType: "purchase" | "sale";
 	paymentStatus: "pending" | "partial" | "paid";
@@ -145,6 +146,39 @@ export interface Invoice {
 	notes?: string;
 	createdAt: string;
 	updatedAt: string;
+}
+
+export interface Customer {
+	_id: string;
+	customerName: string;
+	phone: string;
+	email?: string;
+	address?: string;
+	birthday?: string;
+	children?: string[];
+	newsletter: boolean;
+	notes?: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface CustomerProfile {
+	customer: Customer;
+	analytics: {
+		totalPurchaseAmount: number;
+		totalInvoices: number;
+		lastPurchaseDate?: string;
+		customerSince: string;
+		loyaltyStatus: string;
+		productsPurchased: Array<{
+			itemId: string;
+			itemName: string;
+			totalQuantity: number;
+			totalAmount: number;
+			category: string;
+		}>;
+	};
+	recentInvoices: Invoice[];
 }
 
 export interface StockHistory {

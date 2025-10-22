@@ -62,4 +62,14 @@ export const frontendNavData: NavProps["data"] = [
 			},
 		],
 	},
+	{
+		name: "Customer",
+		items: [
+			{
+				title: "Customers",
+				path: "/bicycle-shop/customers",
+				icon: <Icon icon="solar:user-hands-bold-duotone" size="24" />,
+			},
+		],
+	},
 ];

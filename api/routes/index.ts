@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { attendanceController } from "../controllers/attendanceController.js";
+import { customerController } from "../controllers/customerController.js";
 import { employeeController } from "../controllers/employeeController.js";
 import { inventoryController } from "../controllers/inventoryController.js";
 import { invoiceController } from "../controllers/invoiceController.js";
@@ -53,6 +54,17 @@ router.get("/employees/:id", employeeController.getById);
 router.post("/employees", authorize("manager", "admin"), employeeController.create);
 router.put("/employees/:id", authorize("manager", "admin"), employeeController.update);
 router.delete("/employees/:id", authorize("manager", "admin"), employeeController.delete);
+
+// Customer routes
+// All roles can view and search customers
+router.get("/customers", customerController.getAll);
+router.get("/customers/search", customerController.search);
+router.get("/customers/:id", customerController.getById);
+router.get("/customers/:id/profile", customerController.getProfile);
+// Only manager and admin can manage customers
+router.post("/customers", authorize("manager", "admin"), customerController.create);
+router.put("/customers/:id", authorize("manager", "admin"), customerController.update);
+router.delete("/customers/:id", authorize("manager", "admin"), customerController.delete);
 
 // Attendance routes
 // All roles can view attendance

@@ -11,6 +11,7 @@ export interface IInvoice extends Document {
 	invoiceNumber: string;
 	date: Date;
 	partyId: mongoose.Types.ObjectId;
+	customerId?: mongoose.Types.ObjectId;
 	items: IInvoiceItem[];
 	invoiceType: "purchase" | "sale";
 	paymentStatus: "pending" | "partial" | "paid";
@@ -33,6 +34,7 @@ const InvoiceSchema = new Schema<IInvoice>(
 		invoiceNumber: { type: String, required: true, unique: true },
 		date: { type: Date, default: Date.now },
 		partyId: { type: Schema.Types.ObjectId, ref: "Party", required: true },
+		customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
 		items: { type: [InvoiceItemSchema], required: true },
 		invoiceType: { type: String, enum: ["purchase", "sale"], required: true },
 		paymentStatus: {
