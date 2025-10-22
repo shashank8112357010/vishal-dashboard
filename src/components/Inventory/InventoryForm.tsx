@@ -2,6 +2,7 @@ import { Form, Input, InputNumber, Modal, message, Select } from "antd";
 import type React from "react";
 import { useEffect } from "react";
 import { useCreateInventory, useUpdateInventory } from "@/services/inventoryService";
+import { useParties } from "@/services/partyService";
 import type { InventoryItem } from "@/types/entity";
 
 const { Option } = Select;
@@ -14,8 +15,12 @@ interface InventoryFormProps {
 
 const InventoryForm: React.FC<InventoryFormProps> = ({ visible, item, onClose }) => {
 	const [form] = Form.useForm();
+	const { data: parties = [] } = useParties();
 	const createMutation = useCreateInventory();
 	const updateMutation = useUpdateInventory();
+
+	// Filter to only show creditor parties (suppliers)
+	const suppliers = parties.filter((party) => party.partyType === "creditor");
 
 	useEffect(() => {
 		if (item) {
@@ -127,6 +132,21 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ visible, item, onClose })
 					<Select placeholder="Select stock type">
 						<Option value="loose">Loose</Option>
 						<Option value="fitted">Fitted</Option>
+					</Select>
+				</Form.Item>
+
+				<Form.Item name="partyId" label="Supplier (Optional)">
+					<Select
+						placeholder="Select supplier"
+						allowClear
+						showSearch
+						filterOption={(input, option) => (option?.label as string)?.toLowerCase().includes(input.toLowerCase())}
+					>
+						{suppliers.map((supplier) => (
+							<Option key={supplier._id} value={supplier._id} label={supplier.partyName}>
+								{supplier.partyName}
+							</Option>
+						))}
 					</Select>
 				</Form.Item>
 
