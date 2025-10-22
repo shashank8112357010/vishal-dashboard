@@ -51,7 +51,6 @@ const RecentInvoicesWidget: React.FC = () => {
 													? "blue"
 													: "orange"
 										}
-										size="small"
 									>
 										{invoice.paymentStatus.toUpperCase()}
 									</Tag>

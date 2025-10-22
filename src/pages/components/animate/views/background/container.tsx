@@ -20,8 +20,10 @@ export default function ContainerView({ variant }: Props) {
 		>
 			<MotionContainer className="flex h-full w-full flex-col items-center gap-6">
 				{isKenburns ? (
+					// @ts-expect-error - Template animation variant type issue
 					<m.img src={Cover3} className="h-full w-full object-cover" variants={varients} />
 				) : (
+					// @ts-expect-error - Template animation variant type issue
 					<m.div {...varients} className="h-full w-full" />
 				)}
 			</MotionContainer>

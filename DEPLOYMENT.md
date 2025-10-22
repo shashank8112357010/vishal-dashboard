@@ -2,6 +2,12 @@
 
 This guide will help you deploy the Bicycle Shop Management System to Render.
 
+**IMPORTANT: This project has been simplified to a single repository structure for easy deployment!**
+- All backend code is in the `api/` folder
+- All frontend code is in the `src/` folder
+- Single `package.json` at the root
+- Single `.env` file for all configuration
+
 ## 🚀 Quick Deployment Steps
 
 ### 1. Prerequisites
@@ -36,7 +42,7 @@ This guide will help you deploy the Bicycle Shop Management System to Render.
 
 3. **Set Environment Variables**
    Click "Environment" and add:
-   - `MONGODB_URI`: Your MongoDB connection string
+   - `MONGO_URI`: Your MongoDB connection string
    - `NODE_ENV`: production (should be auto-set)
    - `PORT`: 10000 (should be auto-set)
 
@@ -58,7 +64,7 @@ This guide will help you deploy the Bicycle Shop Management System to Render.
    - **Runtime**: Node
    - **Build Command**:
      ```bash
-     npm install && npm run build
+     npm install --legacy-peer-deps && npm run build
      ```
    - **Start Command**:
      ```bash
@@ -68,7 +74,7 @@ This guide will help you deploy the Bicycle Shop Management System to Render.
 3. **Set Environment Variables**
    Add these in the "Environment" section:
    - `NODE_ENV` = `production`
-   - `MONGODB_URI` = `your-mongodb-connection-string`
+   - `MONGO_URI` = `your-mongodb-connection-string`
    - `PORT` = `10000` (Render will provide this)
 
 4. **Advanced Settings**
@@ -84,7 +90,7 @@ This guide will help you deploy the Bicycle Shop Management System to Render.
 | Variable | Value | Description |
 |----------|-------|-------------|
 | `NODE_ENV` | `production` | Tells the app it's in production mode |
-| `MONGODB_URI` | `mongodb+srv://...` | Your MongoDB Atlas connection string |
+| `MONGO_URI` | `mongodb+srv://...` | Your MongoDB Atlas connection string |
 | `PORT` | `10000` | Port for the server (Render provides this) |
 
 ## 🔧 Troubleshooting

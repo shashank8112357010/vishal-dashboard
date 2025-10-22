@@ -25,6 +25,7 @@ export default function ContainerView({ isText, variant, isMulti }: Props) {
 			{isText ? (
 				<MotionContainer className="flex h-[480px] items-center justify-center font-bold md:text-6xl">
 					{TEXT.split("").map((letter) => (
+						// @ts-expect-error - Template animation variant type issue
 						<m.div key={letter} variants={varients}>
 							{letter}
 						</m.div>
@@ -43,6 +44,7 @@ export default function ContainerView({ isText, variant, isMulti }: Props) {
 								margin: "auto",
 								borderRadius: "8px",
 							}}
+							// @ts-expect-error - Template animation variant type issue
 							variants={varients}
 						/>
 					))}

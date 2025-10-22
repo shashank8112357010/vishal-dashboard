@@ -7,11 +7,9 @@ import { useParties } from "@/services/partyService";
 
 const BicycleDashboard: React.FC = () => {
 	// Load data on mount
-	const { isLoading: partiesLoading } = useParties();
-	const { isLoading: inventoryLoading } = useInventory();
-	const { isLoading: invoicesLoading } = useInvoices();
-
-	const _isLoading = partiesLoading || inventoryLoading || invoicesLoading;
+	useParties();
+	useInventory();
+	useInvoices();
 
 	return (
 		<div style={{ padding: "24px" }}>

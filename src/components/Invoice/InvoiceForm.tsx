@@ -207,7 +207,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ visible, invoice, viewOnly = 
 					disabled={viewOnly}
 					style={{ width: "100%" }}
 					formatter={(value) => `₹ ${value}`}
-					parser={(value) => value?.replace(/₹\s?/g, "")}
+					parser={(value) => Number(value?.replace(/₹\s?/g, ""))}
 				/>
 			),
 		},

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import avatar1 from "@/assets/images/avatars/avatar-1.png";
 import avatar2 from "@/assets/images/avatars/avatar-2.png";
 import avatar3 from "@/assets/images/avatars/avatar-3.png";
@@ -22,7 +22,8 @@ import { formatCurrency } from "@/utils/format-number";
 import { rgbAlpha } from "@/utils/theme";
 import BannerCard from "./banner-card";
 
-const _quickStats = [
+// Unused data - keeping for future reference
+/* const _quickStats = [
 	{
 		icon: "solar:wallet-outline",
 		label: "All Earnings",
@@ -55,9 +56,9 @@ const _quickStats = [
 		color: "#ef4444",
 		chart: [16, 14, 12, 10, 14, 18, 16, 12, 10, 14, 18, 16],
 	},
-];
+]; */
 
-const _monthlyRevenue = {
+/* const _monthlyRevenue = {
 	series: [
 		{
 			name: "Revenue",
@@ -66,14 +67,14 @@ const _monthlyRevenue = {
 	],
 	categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 	percent: 5.44,
-};
+}; */
 
-const _projectTasks = [
+/* const _projectTasks = [
 	{ label: "Horizontal Layout", color: "#3b82f6" },
 	{ label: "Invoice Generator", color: "#f59e42" },
 	{ label: "Package Upgrades", color: "#fbbf24" },
 	{ label: "Figma Auto Layout", color: "#10b981" },
-];
+]; */
 
 const projectUsers = [
 	{ avatar: avatar1, name: "John" },
@@ -82,12 +83,12 @@ const projectUsers = [
 	{ avatar: avatar4, name: "Maciej" },
 	{ avatar: avatar5, name: "Kamil" },
 ];
-const _transactions = [
+/* const _transactions = [
 	{ icon: "mdi:spotify", name: "Spotify Music", id: "#T11032", amount: 10000, time: "06:30 pm", status: "up" },
 	{ icon: "mdi:medium", name: "Medium", id: "#T11032", amount: -26, time: "08:30 pm", status: "down" },
 	{ icon: "mdi:uber", name: "Uber", id: "#T11032", amount: 210000, time: "08:40 pm", status: "up" },
 	{ icon: "mdi:taxi", name: "Ola Cabs", id: "#T11032", amount: 210000, time: "07:40 pm", status: "up" },
-];
+]; */
 
 const totalIncome = {
 	series: [44, 55, 41, 17],
@@ -117,40 +118,78 @@ export default function Workbench() {
 	const lowStockCount = lowStockItems.length;
 
 	// Update quick stats with bicycle shop data
-	const bicycleShopStats = [
-		{
-			icon: "solar:wallet-outline",
-			label: "Total Sales",
-			value: formatCurrency(totalSales),
-			percent: totalSales > totalPurchases ? 15.6 : -5.2,
-			color: "#10b981",
-			chart: [12, 18, 14, 16, 20, 18, 24, 28, 26, 24, 22, 20],
-		},
-		{
-			icon: "solar:box-outline",
-			label: "Inventory Value",
-			value: formatCurrency(totalInventoryValue),
-			percent: 8.2,
-			color: "#3b82f6",
-			chart: [8, 12, 10, 14, 18, 16, 14, 12, 10, 14, 18, 16],
-		},
-		{
-			icon: "solar:users-group-rounded-outline",
-			label: "Total Parties",
-			value: parties.length.toString(),
-			percent: 0,
-			color: "#f59e42",
-			chart: [10, 14, 12, 16, 18, 14, 12, 10, 14, 18, 16, 12],
-		},
-		{
-			icon: "solar:danger-triangle-outline",
-			label: "Low Stock Items",
-			value: lowStockCount.toString(),
-			percent: lowStockCount > 5 ? -12.3 : 0,
-			color: lowStockCount > 5 ? "#ef4444" : "#10b981",
-			chart: [16, 14, 12, 10, 14, 18, 16, 12, 10, 14, 18, 16],
-		},
-	];
+	const bicycleShopStats = useMemo(
+		() => [
+			{
+				icon: "solar:wallet-outline",
+				label: "Total Sales",
+				value: formatCurrency(totalSales),
+				percent: totalSales > totalPurchases ? 15.6 : -5.2,
+				color: "#10b981",
+				chart: [12, 18, 14, 16, 20, 18, 24, 28, 26, 24, 22, 20],
+			},
+			{
+				icon: "solar:box-outline",
+				label: "Inventory Value",
+				value: formatCurrency(totalInventoryValue),
+				percent: 8.2,
+				color: "#3b82f6",
+				chart: [8, 12, 10, 14, 18, 16, 14, 12, 10, 14, 18, 16],
+			},
+			{
+				icon: "solar:users-group-rounded-outline",
+				label: "Total Parties",
+				value: parties.length.toString(),
+				percent: 0,
+				color: "#f59e42",
+				chart: [10, 14, 12, 16, 18, 14, 12, 10, 14, 18, 16, 12],
+			},
+			{
+				icon: "solar:danger-triangle-outline",
+				label: "Low Stock Items",
+				value: lowStockCount.toString(),
+				percent: lowStockCount > 5 ? -12.3 : 0,
+				color: lowStockCount > 5 ? "#ef4444" : "#10b981",
+				chart: [16, 14, 12, 10, 14, 18, 16, 12, 10, 14, 18, 16],
+			},
+		],
+		[totalSales, totalPurchases, totalInventoryValue, lowStockCount, parties.length],
+	);
+
+	// Create chart options for each stat at top level (not in nested function)
+	const chartOption1 = useChart({
+		chart: { sparkline: { enabled: true } },
+		colors: [bicycleShopStats[0].color],
+		grid: { show: false },
+		yaxis: { show: false },
+		tooltip: { enabled: false },
+	});
+
+	const chartOption2 = useChart({
+		chart: { sparkline: { enabled: true } },
+		colors: [bicycleShopStats[1].color],
+		grid: { show: false },
+		yaxis: { show: false },
+		tooltip: { enabled: false },
+	});
+
+	const chartOption3 = useChart({
+		chart: { sparkline: { enabled: true } },
+		colors: [bicycleShopStats[2].color],
+		grid: { show: false },
+		yaxis: { show: false },
+		tooltip: { enabled: false },
+	});
+
+	const chartOption4 = useChart({
+		chart: { sparkline: { enabled: true } },
+		colors: [bicycleShopStats[3].color],
+		grid: { show: false },
+		yaxis: { show: false },
+		tooltip: { enabled: false },
+	});
+
+	const statsChartOptions = [chartOption1, chartOption2, chartOption3, chartOption4];
 
 	// Recent invoices for transactions
 	const recentInvoices = invoices.slice(0, 4).map((invoice) => {
@@ -203,7 +242,9 @@ export default function Workbench() {
 				<Button
 					variant="outline"
 					className="h-16 flex flex-col gap-2"
-					onClick={() => (window.location.href = "/bicycle-shop/inventory")}
+					onClick={() => {
+						window.location.href = "/bicycle-shop/inventory";
+					}}
 				>
 					<Icon icon="solar:box-bold-duotone" size={24} />
 					<span>Manage Inventory</span>
@@ -211,7 +252,9 @@ export default function Workbench() {
 				<Button
 					variant="outline"
 					className="h-16 flex flex-col gap-2"
-					onClick={() => (window.location.href = "/bicycle-shop/parties")}
+					onClick={() => {
+						window.location.href = "/bicycle-shop/parties";
+					}}
 				>
 					<Icon icon="solar:users-group-rounded-bold-duotone" size={24} />
 					<span>Manage Parties</span>
@@ -219,7 +262,9 @@ export default function Workbench() {
 				<Button
 					variant="outline"
 					className="h-16 flex flex-col gap-2"
-					onClick={() => (window.location.href = "/bicycle-shop/invoices")}
+					onClick={() => {
+						window.location.href = "/bicycle-shop/invoices";
+					}}
 				>
 					<Icon icon="solar:document-text-bold-duotone" size={24} />
 					<span>Manage Invoices</span>
@@ -227,7 +272,9 @@ export default function Workbench() {
 				<Button
 					variant="outline"
 					className="h-16 flex flex-col gap-2"
-					onClick={() => (window.location.href = "/bicycle-shop/dashboard")}
+					onClick={() => {
+						window.location.href = "/bicycle-shop/dashboard";
+					}}
 				>
 					<Icon icon="solar:chart-2-bold-duotone" size={24} />
 					<span>Shop Dashboard</span>
@@ -236,7 +283,7 @@ export default function Workbench() {
 
 			{/* 顶部四个统计卡片 */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-				{bicycleShopStats.map((stat) => (
+				{bicycleShopStats.map((stat, index) => (
 					<Card key={stat.label} className="flex flex-col justify-between h-full">
 						<CardContent className="flex flex-col gap-2 p-4">
 							<div className="flex items-center gap-2">
@@ -263,18 +310,7 @@ export default function Workbench() {
 								</span>
 							</div>
 							<div className="w-full h-10 mt-2">
-								<Chart
-									type="bar"
-									height={40}
-									options={useChart({
-										chart: { sparkline: { enabled: true } },
-										colors: [stat.color],
-										grid: { show: false },
-										yaxis: { show: false },
-										tooltip: { enabled: false },
-									})}
-									series={[{ data: stat.chart }]}
-								/>
+								<Chart type="bar" height={40} options={statsChartOptions[index]} series={[{ data: stat.chart }]} />
 							</div>
 						</CardContent>
 					</Card>
@@ -331,7 +367,9 @@ export default function Workbench() {
 					<Button
 						className="w-full mt-auto"
 						size="sm"
-						onClick={() => (window.location.href = "/bicycle-shop/inventory")}
+						onClick={() => {
+							window.location.href = "/bicycle-shop/inventory";
+						}}
 					>
 						<Icon icon="mdi:eye" size={18} /> View Inventory
 					</Button>
@@ -362,7 +400,9 @@ export default function Workbench() {
 								className="w-48"
 								size="sm"
 								variant="default"
-								onClick={() => (window.location.href = "/bicycle-shop/invoices")}
+								onClick={() => {
+									window.location.href = "/bicycle-shop/invoices";
+								}}
 							>
 								<Icon icon="mdi:plus" size={18} /> New Invoice
 							</Button>
@@ -456,11 +496,18 @@ export default function Workbench() {
 						<Button
 							variant="outline"
 							className="flex-1"
-							onClick={() => (window.location.href = "/bicycle-shop/invoices")}
+							onClick={() => {
+								window.location.href = "/bicycle-shop/invoices";
+							}}
 						>
 							View all Invoices
 						</Button>
-						<Button className="flex-1" onClick={() => (window.location.href = "/bicycle-shop/invoices")}>
+						<Button
+							className="flex-1"
+							onClick={() => {
+								window.location.href = "/bicycle-shop/invoices";
+							}}
+						>
 							Create Invoice
 						</Button>
 					</div>

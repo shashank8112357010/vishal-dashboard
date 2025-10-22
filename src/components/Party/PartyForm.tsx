@@ -120,7 +120,7 @@ const PartyForm: React.FC<PartyFormProps> = ({ visible, party, onClose }) => {
 						<InputNumber
 							style={{ width: "100%" }}
 							formatter={(value) => `₹ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-							parser={(value) => value?.replace(/₹\s?|(,*)/g, "")}
+							parser={(value) => Number(value?.replace(/₹\s?|(,*)/g, ""))}
 							disabled
 						/>
 					</Form.Item>

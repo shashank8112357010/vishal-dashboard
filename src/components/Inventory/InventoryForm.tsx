@@ -139,7 +139,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ visible, item, onClose })
 						min={0}
 						style={{ width: "100%" }}
 						formatter={(value) => `₹ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-						parser={(value) => value?.replace(/₹\s?|(,*)/g, "")}
+						parser={(value) => Number(value?.replace(/₹\s?|(,*)/g, "")) as 0}
 						placeholder="Enter purchase price"
 					/>
 				</Form.Item>
@@ -153,7 +153,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ visible, item, onClose })
 						min={0}
 						style={{ width: "100%" }}
 						formatter={(value) => `₹ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-						parser={(value) => value?.replace(/₹\s?|(,*)/g, "")}
+						parser={(value) => Number(value?.replace(/₹\s?|(,*)/g, "")) as 0}
 						placeholder="Enter selling price"
 					/>
 				</Form.Item>

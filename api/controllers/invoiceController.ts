@@ -72,7 +72,7 @@ export const invoiceController = {
 			}
 
 			party.balanceAmount += invoice.totalAmount;
-			party.transactions.push(invoice._id);
+			party.transactions.push(invoice._id as mongoose.Types.ObjectId);
 			await party.save({ session });
 
 			await invoice.save({ session });
@@ -181,8 +181,8 @@ export const invoiceController = {
 			const newParty = await Party.findById(updatedInvoice.partyId).session(session);
 			if (newParty) {
 				newParty.balanceAmount += updatedInvoice.totalAmount;
-				if (!newParty.transactions.includes(updatedInvoice._id)) {
-					newParty.transactions.push(updatedInvoice._id);
+				if (!newParty.transactions.includes(updatedInvoice._id as mongoose.Types.ObjectId)) {
+					newParty.transactions.push(updatedInvoice._id as mongoose.Types.ObjectId);
 				}
 				await newParty.save({ session });
 			}
@@ -239,7 +239,7 @@ export const invoiceController = {
 			const party = await Party.findById(invoice.partyId).session(session);
 			if (party) {
 				party.balanceAmount -= invoice.totalAmount;
-				party.transactions = party.transactions.filter((t) => !t.equals(invoice._id));
+				party.transactions = party.transactions.filter((t) => !t.equals(invoice._id as mongoose.Types.ObjectId));
 				await party.save({ session });
 			}
 

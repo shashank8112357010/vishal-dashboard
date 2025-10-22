@@ -17,7 +17,8 @@ export default function ContainerView({ variant }: Props) {
 			style={{ backgroundColor: themeVars.colors.background.neutral }}
 		>
 			{[...Array(40)].map((_, index) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+				// @ts-expect-error - Template animation variant type issue
+				// biome-ignore lint/suspicious/noArrayIndexKey: Demo component
 				<MotionViewport key={index} variants={varients} className="mt-4">
 					<Card>
 						<span className="text-center">Item {index + 1}</span>

@@ -98,7 +98,7 @@ const InvoiceList: React.FC = () => {
 		{
 			title: "Party",
 			key: "party",
-			render: (_, record: Invoice) => {
+			render: (_: unknown, record: Invoice) => {
 				const party = record.partyId as Party;
 				return party?.partyName || "N/A";
 			},
@@ -117,7 +117,7 @@ const InvoiceList: React.FC = () => {
 		{
 			title: "Items",
 			key: "itemCount",
-			render: (_, record: Invoice) => `${record.items.length} items`,
+			render: (_: unknown, record: Invoice) => `${record.items.length} items`,
 		},
 		{
 			title: "Total Amount",

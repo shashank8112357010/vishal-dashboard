@@ -50,6 +50,7 @@ export default defineConfig(({ mode }) => {
 		},
 
 		build: {
+			outDir: "dist/client",
 			target: "esnext",
 			minify: "esbuild",
 			sourcemap: !isProduction,

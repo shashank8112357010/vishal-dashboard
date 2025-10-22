@@ -1,3 +1,4 @@
+import type mongoose from "mongoose";
 import { connectDB } from "../config/database.js";
 import { Inventory } from "../models/Inventory.js";
 import { Invoice } from "../models/Invoice.js";
@@ -219,7 +220,7 @@ async function seedDatabase() {
 			});
 			await purchaseInvoice.save();
 
-			creditor.transactions.push(purchaseInvoice._id);
+			(creditor.transactions as mongoose.Types.ObjectId[]).push(purchaseInvoice._id as mongoose.Types.ObjectId);
 			creditor.balanceAmount += purchaseInvoice.totalAmount;
 			await creditor.save();
 		}
@@ -246,7 +247,7 @@ async function seedDatabase() {
 			});
 			await saleInvoice.save();
 
-			debtor.transactions.push(saleInvoice._id);
+			(debtor.transactions as mongoose.Types.ObjectId[]).push(saleInvoice._id as mongoose.Types.ObjectId);
 			debtor.balanceAmount += saleInvoice.totalAmount;
 			await debtor.save();
 		}
